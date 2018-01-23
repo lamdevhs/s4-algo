@@ -1,12 +1,12 @@
 def holland(t):
   b = 0
   w = 0
-  # search for r:
   r = len(t) - 1
-  while r >= 0 and t[r] == "red":
-    r -= 1
-  # if r == -1: # array is full of reds
-  #   return t
+      # while r >= 0 and t[r] == "red":
+      #   r -= 1
+      # if r == -1: # array is full of reds
+      #   return t
+
   # inv:
   # 0 <= b <= w <= r+1 <= len(t)
   # forall k [0, b-1], t[k] = blue
