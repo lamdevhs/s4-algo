@@ -1,32 +1,35 @@
 from random import choice, randrange
 
-# ---------------- version brut
+# --------------- version brut
 def brutPalin(cs):
-  pos = 0
-  length = 1
+  resPosition = 0
+  resLength = 1
   for i in range(len(cs)):
     for j in range(i+1, len(cs)+1):
       hereLen = j - i
-      if (isPalin(cs, i, j)) and hereLen > length:
-        pos = i
-        length = hereLen
-  return (pos, length)
+      if (isPalin(cs, i, j)) and hereLen > resLength:
+        resPosition = i
+        resLength = hereLen
+  return (resPosition, resLength)
 
 def isPalin(cs, i, j):
   j -= 1
-  while i <= j:
+  cont = True
+  result = True
+  while i <= j and cont:
     if cs[i] != cs[j]:
-      return False
+      result = False
+      cont = False # to break the loop
     i+=1
     j-=1
-  return True
+  return result
 
 
-# --------------- matricielle
+# --------------- varsion matricielle
 
 def matrixPalin(cs):
-  pos = 0
-  length = 1
+  resPosition = 0
+  resLength = 1
   ln = len(cs)
   M = [[False for i in range(ln)] for j in range(ln)]
   
@@ -35,9 +38,9 @@ def matrixPalin(cs):
     if i != ln -1:
       if cs[i] == cs[i+1]:
         M[i][i+1] = True
-        if length < 2:
-          pos = i
-          length = 2 
+        if resLength < 2:
+          resPosition = i
+          resLength = 2 
 
   for L in range(3, ln + 1):
     for i in range(ln):
@@ -46,27 +49,33 @@ def matrixPalin(cs):
         # we're at M[i][j]:
         if M[i+1][j-1] and cs[i] == cs[j]:
           M[i][j] = True
-          if length < L:
-            pos = i
-            length = L
-  return (pos, length)
+          if resLength < L:
+            resPosition = i
+            resLength = L
+  return (resPosition, resLength)
 
-# v3
+# --------------- v3
 
 def v3(cs):
   fullLen = len(cs)
   # result:
   resLen = 1
   resPos = 0
+
+  # total amount of centers:
   centers = 2*fullLen - 1
-    # center 0 is char 0, center 1 is between
-    # char 0 and 1, center 2 is char 1, etc
+    # center 0 is cs[1],
+    # center 1 is between cs[0] and cs[1],
+    # center 2 is cs[1], etc
+    # thus, palindromes with even centers are odd-sized,
+    # those with odd centers are even-sized.
 
   for center in range(centers): # searching left to right
-    if center % 2 == 0: # impair palyndroms
+    if center % 2 == 0: # odd-sized palyndroms
       # there're `center/2` characters to the left
       # and `fullLen - center - 1` chars to the right
       # of this center
+      # (the char right under the center isn't taken into account)
       leftLen = center / 2
       rightLen = fullLen - leftLen - 1
       hopefulLen = 1 + 2*min(leftLen, rightLen)
@@ -78,43 +87,47 @@ def v3(cs):
       hopefulLen = 2*min(leftLen, rightLen)
 
     if hopefulLen > resLen:
-      # no point continuing otherwise
-      # (using a `break` would be more efficient...)
+      # ^ no point continuing if we can't hope
+      # for a longer palindrom
+      # than what we found previously
+      # (using a `break` here would be more efficient...)
       (posHere, maxLenHere) = biggestPalinHere(cs, center, hopefulLen)
-      if maxLenHere > resLen:
+      if maxLenHere > resLen: # did we find better here?
         resLen = maxLenHere
         resPos = posHere
   return (resPos, resLen)
 
 
 def biggestPalinHere(cs, center, hope):
-  if center % 2 == 0: # impair palindrom
+  if center % 2 == 0:
+    # palindromes de taille impair:
+    # eg center = 0 correspond à celui
+    # centré sur cs[0]
     i = (center / 2) - 1
     j = i + 2
     halfHope = (hope - 1) / 2
     toAdd = 1
+      # ^ we add the char under the center
+      # to the final length of the palin
 
-  else: # pair palindrom
+  else:
+    # palindromes de taille pair
+    # eg center = 1 correspond à celui
+    # centré sur la faille entre cs[0] et cs[1]
     i = (center - 1) / 2
     j = i + 1
     halfHope = hope / 2
     toAdd = 0
 
-  for offset in range(halfHope):
-    if cs[i - offset] != cs[j + offset]:
-      return (i - offset + 1, offset*2 + toAdd)
+  for k in range(halfHope):
+    if cs[i - k] != cs[j + k]:
+      # ^ end of palindrom detected
+      return (i - k + 1, k*2 + toAdd)
   return (i - halfHope + 1, hope)
 
-  # the output is slightly absurd in the case of
-  # zero-lengthed pair palindroms, but who cares
 
-
-
-
-
-
-def getStr(filename):
-  with file(filename) as f:
+def strFromFile(path):
+  with file(path) as f:
     return f.read()
 
 path = "plp/"
@@ -125,14 +138,14 @@ files = [
 
 def testWithFiles(f):
   for fileName in files:
-    cs = getStr(path + fileName)
-    print "file:", fileName
-    print f(cs)
-    print
+    cs = strFromFile(path + fileName)
+    print f.func_name, ": file", fileName, ":", f(cs)
 
 AZ = "abcdefghijklmnopqrstuvwxyz"
 
+#| check if results from f and g are identical
 def compare(f, g):
+  print "comparing", f.func_name, g.func_name, ":"
   pb = False
   for _ in range(1000):
     size = randrange(100)
@@ -141,19 +154,17 @@ def compare(f, g):
     resg = g(cs)
     if resf != resg:
       pb = True
-      print "Houston, we have a problem"
-      print size, ":", cs
-      print "f", resf
-      print "g", resg
+      print "Houston, we have a problem!"
+      print "size =", size, "; input =", cs
+      print "results:"
+      print f.func_name, resf
+      print g.func_name, resg
   if not pb:
-    print 'all ok'
-
-#testFiles(brutPalin)
-
+    print 'results are identical'
 
 compare(brutPalin, matrixPalin)
 compare(brutPalin, v3)
 
-
+testWithFiles(brutPalin)
 testWithFiles(matrixPalin)
 testWithFiles(v3)
