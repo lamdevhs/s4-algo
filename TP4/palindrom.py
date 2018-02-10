@@ -1,7 +1,11 @@
 from random import choice, randrange
+import time
 
 # --------------- version brut
 def brutPalin(cs):
+  if len(cs) == 0:
+    return (-1, 0)
+
   resPosition = 0
   resLength = 1
   for i in range(len(cs)):
@@ -28,6 +32,9 @@ def isPalin(cs, i, j):
 # --------------- varsion matricielle
 
 def matrixPalin(cs):
+  if len(cs) == 0:
+    return (-1, 0)
+
   resPosition = 0
   resLength = 1
   ln = len(cs)
@@ -58,24 +65,27 @@ def matrixPalin(cs):
 
 def v3(cs):
   fullLen = len(cs)
+
+  if fullLen == 0:
+    return (-1, 0)
   # result:
-  resLen = 1
   resPos = 0
+  resLen = 1
 
   # total amount of centers:
   centers = 2*fullLen - 1
-    # center 0 is cs[1],
+    # center 0 is cs[0],
     # center 1 is between cs[0] and cs[1],
     # center 2 is cs[1], etc
     # thus, palindromes with even centers are odd-sized,
     # those with odd centers are even-sized.
 
   for center in range(centers): # searching left to right
-    if center % 2 == 0: # odd-sized palyndroms
+    if center % 2 == 0: # odd-sized palindroms
       # there're `center/2` characters to the left
       # and `fullLen - center - 1` chars to the right
       # of this center
-      # (the char right under the center isn't taken into account)
+      # (the char right "under" the center isn't taken into account)
       leftLen = center / 2
       rightLen = fullLen - leftLen - 1
       hopefulLen = 1 + 2*min(leftLen, rightLen)
@@ -101,8 +111,8 @@ def v3(cs):
 def biggestPalinHere(cs, center, hope):
   if center % 2 == 0:
     # palindromes de taille impair:
-    # eg center = 0 correspond à celui
-    # centré sur cs[0]
+    # eg center = 0 correspond a celui
+    # centre sur cs[0]
     i = (center / 2) - 1
     j = i + 2
     halfHope = (hope - 1) / 2
@@ -112,8 +122,8 @@ def biggestPalinHere(cs, center, hope):
 
   else:
     # palindromes de taille pair
-    # eg center = 1 correspond à celui
-    # centré sur la faille entre cs[0] et cs[1]
+    # eg center = 1 correspond a celui
+    # centre sur la faille entre cs[0] et cs[1]
     i = (center - 1) / 2
     j = i + 1
     halfHope = hope / 2
@@ -126,6 +136,39 @@ def biggestPalinHere(cs, center, hope):
   return (i - halfHope + 1, hope)
 
 
+# this algorithm finds the last biggest
+# palindrom, so we gotta apply it to reversed
+# strings to get the same result
+# obviously it could be seen as a disadvantage
+# when comparing benchmarks, but this algorithm
+# remains faster than the others anyway
+def manacher(original):
+  s = reversed(original)
+  if s == "":
+    t = "^#$"
+  else:
+    t = "^#" + "#".join(s) + "#$"
+
+  c = 0
+  r = 0
+  p = [0] * len(t)
+  for i in range(1,len(t)-1):
+    mirror = 2*c - i
+    p[i] = max(0, min(r-i, p[mirror]))
+
+    while t[i+1+p[i]] == t[i-1-p[i]]:
+      p[i] += 1
+
+    if i+p[i] > r:
+      c = i
+      r = i+p[i]
+
+  (k,i) = max((p[i],i) for i in range(1,len(t)-1))
+  return (len(original) - (i+k)/2, k)
+
+
+
+
 def strFromFile(path):
   with file(path) as f:
     return f.read()
@@ -136,14 +179,23 @@ files = [
   for x in [500,1000,2000,4000,8000]
   ]
 
-def testWithFiles(f):
-  for fileName in files:
-    cs = strFromFile(path + fileName)
-    print f.func_name, ": file", fileName, ":", f(cs)
+# also prints the benchmarking
+def testWithFiles(fs):
+  for f in fs:
+    print f.func_name + "():"
+    for fileName in files:
+      cs = strFromFile(path + fileName)
+      before = time.clock()
+      res = f(cs)
+      elapsed = time.clock() - before;
+      print "  file", fileName, "->", res
+      print "    time elapsed:", elapsed
+  print
 
 AZ = "abcdefghijklmnopqrstuvwxyz"
 
 #| check if results from f and g are identical
+#| test them over a wide range of different inputs
 def compare(f, g):
   print "comparing", f.func_name, g.func_name, ":"
   pb = False
@@ -161,10 +213,10 @@ def compare(f, g):
       print g.func_name, resg
   if not pb:
     print 'results are identical'
+  print
 
+testWithFiles([brutPalin, matrixPalin,v3, manacher])
+
+compare(manacher, v3)
 compare(brutPalin, matrixPalin)
 compare(brutPalin, v3)
-
-testWithFiles(brutPalin)
-testWithFiles(matrixPalin)
-testWithFiles(v3)
