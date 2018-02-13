@@ -1,0 +1,44 @@
+brutPalin():
+  file plp_500.txt -> (242, 37)
+    time elapsed: 0.043312
+  file plp_1000.txt -> (137, 37)
+    time elapsed: 0.151728
+  file plp_2000.txt -> (124, 37)
+    time elapsed: 0.613006
+  file plp_4000.txt -> (124, 37)
+    time elapsed: 2.450224
+  file plp_8000.txt -> (256, 37)
+    time elapsed: 9.930388
+matrixPalin():
+  file plp_500.txt -> (242, 37)
+    time elapsed: 0.02205
+  file plp_1000.txt -> (137, 37)
+    time elapsed: 0.092409
+  file plp_2000.txt -> (124, 37)
+    time elapsed: 0.411104
+  file plp_4000.txt -> (124, 37)
+    time elapsed: 1.766877
+  file plp_8000.txt -> (256, 37)
+    time elapsed: 7.545628
+v3():
+  file plp_500.txt -> (242, 37)
+    time elapsed: 0.001153
+  file plp_1000.txt -> (137, 37)
+    time elapsed: 0.003604
+  file plp_2000.txt -> (124, 37)
+    time elapsed: 0.01392
+  file plp_4000.txt -> (124, 37)
+    time elapsed: 0.069453
+  file plp_8000.txt -> (256, 37)
+    time elapsed: 0.227565
+manacher():
+  file plp_500.txt -> (242, 37)
+    time elapsed: 0.000681
+  file plp_1000.txt -> (137, 37)
+    time elapsed: 0.001325
+  file plp_2000.txt -> (124, 37)
+    time elapsed: 0.002579
+  file plp_4000.txt -> (124, 37)
+    time elapsed: 0.004761
+  file plp_8000.txt -> (256, 37)
+    time elapsed: 0.009622

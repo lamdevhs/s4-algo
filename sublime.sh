@@ -8,6 +8,6 @@ wget -O $FILE https://download.sublimetext.com/sublime_text_3_build_3143_x64.tar
 cd ~/
 bzip2 -d $FILE; tar xvf ~/$NAME.tar
 cd -
-nautilus ~/sublime_text_3
+~/sublime_text_3/sublime_text
 
 
