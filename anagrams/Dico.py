@@ -1,5 +1,6 @@
 
-from Tools import (mapsum,
+import sys
+from Tools import (mapsum, indexOf_div,
   linesFromFile, classify, indexOf)
 
 # Char -> Int
@@ -74,10 +75,16 @@ class Dico():
       print "building Dico..."
     self.dico = multigroup(words, [len, wordSum])
     if verbose:
-      print "indexing done..."
+      print "indexing done."
 
-    # set up classes:
+    # set up families:
+    if verbose:
+      sys.stdout.write("creating families... ")
+      sys.stdout.flush()
     for lenGrp in self.dico:
+      if verbose:
+        sys.stdout.write("#")
+        sys.stdout.flush()
       if lenGrp != None:
         for i in range(len(lenGrp)):
           sumGrp = lenGrp[i]
@@ -85,7 +92,7 @@ class Dico():
             lenGrp[i] = classify(sumGrp, sorted)
     
     if verbose:
-      print "families done..."
+      print
       print "Dico done."
 
   # Path -> Dico
@@ -116,11 +123,35 @@ class Dico():
     
     (classes, groups) = sumGrp
     cLass = sorted(word)
-    ix = indexOf(cLass, classes)
+    ix = indexOf_div(cLass, classes)
     if ix == -1:
       return [] # ?? or None?
     else:
-      return groups[ix]
+      return groups[ix][:]
+
+        # # Dico . String -> Int
+        # def nbAnagramsOf(self, word):
+        #   L = len(word)
+        #   if L >= len(self.dico):
+        #     return 0
+        #   lenGrp = self.dico[L]
+        #   if lenGrp == None:
+        #     return 0
+          
+        #   S = wordSum(word)
+        #   if S >= len(lenGrp):
+        #     return 0
+        #   sumGrp = lenGrp[S]
+        #   if sumGrp == None:
+        #     return 0
+          
+        #   (classes, groups) = sumGrp
+        #   cLass = sorted(word)
+        #   ix = indexOf(cLass, classes)
+        #   if ix == -1:
+        #     return 0 # ?? or None?
+        #   else:
+        #     return len(groups[ix])
 
   # Dico . Int ->
   # (Int, List (List String))
@@ -160,20 +191,30 @@ class Dico():
 
 
 
+# ----
+# String
+dicopath = "dico.txt"
 
+# The one and only dictionnary, used to get very fast
+# access to any word's families of known anagrams.
+# Is imported by the other files as global variable.
+#
+# Dico
+DICO = Dico.fromFile(dicopath, verbose = True)
 
-
-
-
-
-# if sol[0] == sol[1]:
-#       rest = mult(sol[2:])
-#       for i in range(len(head)):
-#         for j in range(i + 1, len(head)):
-#           for y in rest:
-#             r.append([])
-
-
-# String . String -> Bool
-def areAnagrams(wa, wb):
-  return sorted(wa) == sorted(wb)
+if True:
+  no = 0
+  NN = 0
+  for L in range(len(DICO.dico)):
+    d1 = DICO.dico[L]
+    if d1 != None:
+      for S in range(len(d1)):
+        d2 = d1[S]
+        if d2 != None:
+          (sigs, families) = d2
+          no += 1
+          for fam in families:
+            NN += len(fam)
+          if sorted(sigs) != sigs:
+            no += 1
+  print "no", no, NN

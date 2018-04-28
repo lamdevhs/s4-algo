@@ -1,0 +1,8 @@
+= todo
+
+== optimizations
+- Tools.classify : sort the classes along the way, so that we can use indexOf_div
+  right from the start, should speed the loading
+
+== To Ask
+- format des cartouches ?

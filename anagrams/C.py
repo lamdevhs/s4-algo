@@ -1,6 +1,6 @@
 
-from Tools import (linesToFile, dicopath, identity, classify)
-from Dico import Dico
+from Tools import (linesToFile, identity, classify)
+from Dico import (Dico, DICO)
 
 
 
@@ -233,7 +233,7 @@ def multiplyFamilies_BT(families, L, familyIx, lastChoice,
 
 
 
-  
+
 
 # List (List String) ->
 # List (String)
@@ -296,7 +296,7 @@ def testvalid(D, string, n):
   linesToFile(flat, "A" + string + str(n) + ".tempo")
 
 def main():
-  D = Dico.fromFile(dicopath, verbose = True)
+  D = DICO
   #testvalid(D, "CHAMPOLLION", 2)
   testvalid(D, "AIRAIR", 2)
   testvalid(D, "CHAMPOLLION", 4)

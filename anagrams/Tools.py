@@ -1,8 +1,5 @@
 from Either import Left, Right
 
-# ----
-# ----
-dicopath = "dico.txt"
 
 # ----
 # ----
@@ -50,6 +47,24 @@ def indexOf(x, ys):
       return i
   return -1
 
+# x . List x -> Int
+def indexOf_div(x, ys):
+  m = 0
+  M = len(ys)
+  while m < M - 1:
+    c = (M + m)//2
+    y = ys[c]
+    if y == x:
+      return c
+    elif x < y:
+      M = c
+    else:
+      m = c
+  if ys[m] == x:
+    return m
+  else:
+    return -1
+
 # List x .
 # (x -> c) ->
 # (List c, List (List x))
@@ -67,4 +82,29 @@ def classify(xs, getClass):
       groups.append([x])
     else:
       groups[classIndex].append(x)
+  z = zip(classes, groups)
+  z.sort(ff)
+  (classes, groups) = unzip(z)
   return (classes, groups)
+
+def ff(t1, t2):
+  return cmp(t1[0],t2[0])
+
+def unzip(L):
+  l = len(L)
+  A = [None]*l
+  B = [None]*l
+  for ix in range(l):
+    (a, b) = L[ix]
+    A[ix] = a
+    B[ix] = b
+  return (A, B)
+
+
+def nDuplicates(L):
+  L = sorted(L)
+  n = 0
+  for i in range(1,len(L)):
+    if L[i] == L[i-1]:
+      n += 1
+  return n
