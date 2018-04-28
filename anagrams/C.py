@@ -67,14 +67,6 @@ class BTState():
     return r
 # (END BTState)
 
-# Dico . String ->
-# List (List String)
-def A1(D, letters):
-  r = []
-  for L in range(len(D.dico)):
-    r += D.multiAnagramsOfLen(letters, L)
-  return r
-
 # Dico . String . Int ->
 # List (List String)
 def multiAnagrams(D, inputString, numberOfWords):
@@ -187,6 +179,25 @@ def multiAnagrams_backtracker(D, S):
 # ---------------------------
 # M A I N
 
+# String ->
+# List (List String)
+def A1(letters):
+  N = len(letters)
+  r = []
+  for numberOfWords in range(1, N + 1):
+    # ^ there's maximum N words of one letter
+    # to hope for
+    r += flatten(multiAnagrams(DICO, letters, numberOfWords))
+  return r
+
+def A2(letters, N):
+  r = []
+  for numberOfWords in range(1, N + 1):
+    # ^ there's maximum N words of one letter
+    # to hope for
+    r += flatten(multiAnagrams(DICO, letters, numberOfWords))
+  return r
+
 
 def dup(l):
   r = []
@@ -295,7 +306,7 @@ def testvalid(D, string, n):
   print "reslen=", len(flat)
   linesToFile(flat, "A" + string + str(n) + ".tempo")
 
-def main():
+def main2():
   D = DICO
   #testvalid(D, "CHAMPOLLION", 2)
   testvalid(D, "AIRAIR", 2)
@@ -303,4 +314,15 @@ def main():
   #testvalid(D, "CHAMPOLLION", 1)
   testvalid(D, "CHAMPOLLION", 3)
   #testvalid(D, "CHAMPOLION", 4)
+
+def main():
+  for word in ["ROSE", "PROSE", "CHAMPOLLION"]:
+    res = A1(word)
+    print word, len(res)
+
+  for n in range(1, 6):
+    res = A2("CHAMPOLLION", n)
+    print n, len(res)
+  for i in range(10):
+    print len(A2("CAROLINEETFLORIAN", i))
 main()
