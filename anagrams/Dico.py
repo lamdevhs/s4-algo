@@ -222,7 +222,6 @@ class Dico():
     # solutions, partialSolution):
     if S.nWordsLeft == 0:
       # print "NW = 0"
-      S.result.append(S.partialSolution)
       return # solutions
     elif S.nWordsLeft == 1:
       # print "NW = 1"
@@ -234,24 +233,15 @@ class Dico():
         S.selection < S.prevWord):
         return # deadend
 
-      if S.selection == S.prevWord:
-        S.partialSolution[-1][0] += 1
-          # ^ we increase the number of occurences (index 0)
-          # of the last family/word of the last solution
-        newSolution = S.partialSolution
-        S.result.append(newSolution)
-        return
+      anagrams = self.anagramsOf(S.selection)
+      if len(anagrams) != 0:
+        # print "anagrams != 0"
+        S.result.append(S.partialSolution
+          + [anagrams])
+        # print "sol len ----", len(solutions)
       else:
-        anagrams = self.anagramsOf(S.selection)
-        if len(anagrams) != 0:
-          # print "anagrams != 0"
-          newSolution = S.partialSolution + [1, anagrams]
-          # print "sol len ----", len(solutions)
-          S.result.append(newSolution)
-          return
-        else:
-          # print "anagrams == 0"
-          pass
+        # print "anagrams == 0"
+        pass
     else:
       if S.nextWordLen == None:
         # print "Len == 0"
@@ -275,30 +265,15 @@ class Dico():
             S.selLen == len(S.prevWord) and
             S.selection < S.prevWord):
             return # deadend
-
-          if S.selection == S.prevWord:
-            deadend = False
-            sameWord = True
-          else:
-            sameWord = False
-            anagrams = self.anagramsOf(S.selection)
-            if len(anagrams) != 0:
-              deadend = True
-            else:
-              deadend = False
-          if deadend:
-            return
-          newS = S.copy()
-          newS.nWordsLeft -= 1
-          newS.minLenNextWord = S.selLen
-          newS.prevWord = S.selection
-          newS.nextWordLen = None
-          if sameWord:
-            newS.partialSolution[-1][0] += 1
-            self.backtracker(newS)
-            newS.partialSolution[-1][0] -= 1
-          else:
-            newS.partialSolution = S.partialSolution + [1, anagrams]
+          anagrams = self.anagramsOf(S.selection)
+          if len(anagrams) != 0:
+            newS = S.copy()
+            newS.nWordsLeft -= 1
+            newS.minLenNextWord = S.selLen
+            newS.prevWord = S.selection
+            newS.nextWordLen = None
+            newS.partialSolution = (S.partialSolution
+              + [anagrams])
             self.backtracker(newS)
             # self.backtracker(NW - 1, NC, selLen,
             #   letters, amounts, "", 0, 0, 0,
@@ -404,16 +379,22 @@ def mult(sol):
   if len(sol) == 0:
     return []
   if len(sol) == 1:
-    vv = mult1(sol[0])
-    return map(lambda s: [s], vv)
+    return map(lambda s: [s], sol[0])
   else:
     r = []
-    head = mult1(sol[0])
+    head = sol[0]
     rest = mult(sol[1:])
     for x in head:
       for y in rest:
         r.append([x] + y)
     return r
+
+# if sol[0] == sol[1]:
+#       rest = mult(sol[2:])
+#       for i in range(len(head)):
+#         for j in range(i + 1, len(head)):
+#           for y in rest:
+#             r.append([])
 
 def mult1(sol):
   if len(sol) != 2 or sol[0] < 0:
@@ -432,19 +413,6 @@ def bt(N, family, r, last, partial = []):
     for i in range(last, len(family)):
       val = family[i]
       bt(N-1, family, r, i, partial + [val])
-
-
-
-
-
-
-
-# if sol[0] == sol[1]:
-#       rest = mult(sol[2:])
-#       for i in range(len(head)):
-#         for j in range(i + 1, len(head)):
-#           for y in rest:
-#             r.append([])
 
 
 def Join(xs, x):
