@@ -1,5 +1,6 @@
 
-from Tools import pause, mapsum, linesToFile, linesFromFile, dicopath, identity
+from Tools import (pause, mapsum, linesToFile,
+  linesFromFile, dicopath, identity)
 
 # Char -> Int
 def letter2int(char):
@@ -99,22 +100,35 @@ def rebuildString(letters, amounts):
 
 class Dico():
   # Dico . List String -> Dico
-  def __init__(self, words):
+  def __init__(self, words, verbose = False):
     # self.dico = multigroup(words, [wordHead, len, wordSum])
-    print "building Dico..."
+    if verbose:
+      print "building Dico..."
     self.dico = multigroup(words, [len, wordSum])
-    print "grouping done..."
+    if verbose:
+      print "grouping done..."
+
     # set up classes:
-    #for letterGrp in self.dico:
-    #  if letterGrp != None:
     for lenGrp in self.dico:
       if lenGrp != None:
         for i in range(len(lenGrp)):
           sumGrp = lenGrp[i]
           if sumGrp != None:
             lenGrp[i] = classify(sumGrp, sorted)
-    print "classifying done..."
-    print "Dico done."
+    
+    if verbose:
+      print "classifying done..."
+      print "Dico done."
+
+  # Path -> Dico
+  @staticmethod
+  def fromFile(dicopath, verbose = False):
+    eith = linesFromFile(dicopath)
+    if eith.isLeft:
+      raise Exception (eith.leftValue)
+    words = eith.rightValue
+    D = Dico(words, verbose)
+    return D
 
   # Dico . String -> List String
   def anagramsOf(self, word):
@@ -186,75 +200,194 @@ class Dico():
 
   # Dico . String . Int ->
   # List (List String)
-  def multiAnagrams(self, string, NW):
-    string = sorted(string)
-    NC = len(string)
-    minLen = 1
-    (letters, grouped) = classify(string, identity)
-    amounts = map(len, grouped)
-    print letters, amounts
+  def multiAnagrams(self, inputString, numberOfWords):
+    # minLen = 1
+    # (letters, grouped) = classify(string, identity)
+    # amounts = map(len, grouped)
+    # print letters, amounts
+    # self.backtracker(NW, NC, minLen,
+    #   letters, amounts, "", 0, 0, 0,
+    #   solutions, [])
     solutions = []
-    self.backtracker(NW, NC, minLen,
-      letters, amounts, "", 0, 0, 0,
-      solutions, [])
+    S = BTState(solutions, numberOfWords,
+      inputString)
+    self.backtracker(S)
     return solutions
 
-  def backtracker(
-    self, NW, NC, minLen,
-    letters, amounts,
-    selection, selLen, Len, whichLetter,
-    solutions, partialSolution):
-    if NW == 0:
+  # Dico . BTState -> Void
+  def backtracker(self, S):
+    # self, NW, NC, minLen,
+    # letters, amounts,
+    # selection, selLen, Len, whichLetter,
+    # solutions, partialSolution):
+    if S.nWordsLeft == 0:
       # print "NW = 0"
+      S.result.append(S.partialSolution)
       return # solutions
-    elif NW == 1:
+    elif S.nWordsLeft == 1:
       # print "NW = 1"
-      string = rebuildString(letters, amounts)
-      anagrams = self.anagramsOf(string)
-      if len(anagrams) != 0:
-        # print "anagrams != 0"
-        solutions.append(partialSolution
-          + [anagrams])
-        # print "sol len ----", len(solutions)
+      S.selection = rebuildString(S.validLetters,
+        S.validAmounts)
+      S.selLen = len(S.selection)
+      if (S.prevWord != None and
+        S.selLen == len(S.prevWord) and
+        S.selection < S.prevWord):
+        return # deadend
+
+      if S.selection == S.prevWord:
+        S.partialSolution[-1][0] += 1
+          # ^ we increase the number of occurences (index 0)
+          # of the last family/word of the last solution
+        newSolution = S.partialSolution
+        S.result.append(newSolution)
+        return
       else:
-        # print "anagrams == 0"
-        pass
+        anagrams = self.anagramsOf(S.selection)
+        if len(anagrams) != 0:
+          # print "anagrams != 0"
+          newSolution = S.partialSolution + [1, anagrams]
+          # print "sol len ----", len(solutions)
+          S.result.append(newSolution)
+          return
+        else:
+          # print "anagrams == 0"
+          pass
     else:
-      if Len == 0:
+      if S.nextWordLen == None:
         # print "Len == 0"
-        for L in range(minLen, 1 + NC//NW):
-          self.backtracker(NW, NC, minLen,
-            letters, amounts, "", 0, L, 0,
-            solutions, partialSolution)
+        minL = S.minLenNextWord
+        maxL = S.nLettersLeft // S.nWordsLeft
+        for L in range(minL, 1 + maxL):
+          newS = S.copy()
+          newS.nextWordLen = L
+          newS.selection = ""
+          newS.selLen = 0
+          newS.nextLetterIx = 0
+          self.backtracker(newS)
+          # self.backtracker(NW, NC, minLen,
+          #   letters, amounts, "", 0, L, 0,
+          #   solutions, partialSolution)
       else:
         # print "Len =", Len
-        if selLen == Len:
+        if S.selLen == S.nextWordLen:
           # print "selLen == Len"
-          anagrams = self.anagramsOf(selection)
-          if len(anagrams) != 0:
-            self.backtracker(NW - 1, NC, selLen,
-              letters, amounts, "", 0, 0, 0,
-              solutions, partialSolution + [anagrams])
+          if (S.prevWord != None and
+            S.selLen == len(S.prevWord) and
+            S.selection < S.prevWord):
+            return # deadend
+
+          if S.selection == S.prevWord:
+            deadend = False
+            sameWord = True
+          else:
+            sameWord = False
+            anagrams = self.anagramsOf(S.selection)
+            if len(anagrams) != 0:
+              deadend = True
+            else:
+              deadend = False
+          if deadend:
+            return
+          newS = S.copy()
+          newS.nWordsLeft -= 1
+          newS.minLenNextWord = S.selLen
+          newS.prevWord = S.selection
+          newS.nextWordLen = None
+          if sameWord:
+            newS.partialSolution[-1][0] += 1
+            self.backtracker(newS)
+            newS.partialSolution[-1][0] -= 1
+          else:
+            newS.partialSolution = S.partialSolution + [1, anagrams]
+            self.backtracker(newS)
+            # self.backtracker(NW - 1, NC, selLen,
+            #   letters, amounts, "", 0, 0, 0,
+            #   solutions, partialSolution + [anagrams])
         else:
           # print "selLen != Len", Len, selLen, whichLetter
-          if whichLetter >= len(letters):
+          if S.nextLetterIx >= len(S.validLetters):
             return # wrong path
-          letter = letters[whichLetter]
-          amount = amounts[whichLetter]
-          for quantity in range(0, min(Len - selLen, amount) + 1):
+          letter = S.validLetters[S.nextLetterIx]
+          maxAmount = S.validAmounts[S.nextLetterIx]
+          maxQ = min(S.nextWordLen-S.selLen, maxAmount)
+          for quantity in range(0, maxQ + 1):
             # print "quantity", quantity, letter
-            amounts[whichLetter] -= quantity
-            self.backtracker(NW, NC - quantity, minLen,
-              letters, amounts, selection + quantity*letter,
-              selLen + quantity, Len, whichLetter + 1,
-              solutions, partialSolution)
-            amounts[whichLetter] += quantity
+            S.validAmounts[S.nextLetterIx] -= quantity
+            newS = S.copy()
+            newS.selection = (S.selection
+              + quantity*letter)
+            newS.selLen += quantity
+            newS.nLettersLeft -= quantity
+            newS.nextLetterIx += 1
+            self.backtracker(newS)
+            S.validAmounts[S.nextLetterIx] += quantity
+            # ^ S and newS share the same .amounts
+            # array, so we have to reset its values
+            # after backtracking
+
+            # self.backtracker(NW, NC - quantity, minLen,
+            #   letters, amounts,
+            #   selection + quantity*letter,
+            #   selLen + quantity, Len, whichLetter + 1,
+            #   solutions, partialSolution)
 
 
 
+class BTState():
+    # (self, nWordsLeft, nLettersLeft,
+    # minLenNextWord,  nextWordLen,
+    # validLetters, validAmounts,
+    # selection, selLen, nextLetterIx,
+    # partialSolution):
+  def __init__(self, result, numberOfWords = None,
+      inputString = ""):
+    self.nWordsLeft = numberOfWords
+
+    inputString = sorted(inputString)
+    self.nLettersLeft = len(inputString)
+    
+    (validLetters, groupedByLetter) = classify(
+      inputString, identity)
+    self.validLetters = validLetters
+    self.validAmounts = map(len, groupedByLetter)
+    
+    self.minLenNextWord = 1
+    self.nextWordLen = None
+    self.prevWord = None
+    self.selection = ""
+    self.selLen = 0
+    self.nextLetterIx = 0
+    self.partialSolution = []
+    self.result = result
+
+  # BTState -> BTState
+  def copy(self):
+    r = BTState(self.result) # mostly dummy state
+    (r.nWordsLeft,
+      r.nLettersLeft,
+      r.validLetters,
+      r.validAmounts,
+      r.minLenNextWord,
+      r.nextWordLen,
+      r.prevWord,
+      r.selection,
+      r.selLen,
+      r.nextLetterIx,
+      r.partialSolution) = (self.nWordsLeft,
+      self.nLettersLeft,
+      self.validLetters,
+      self.validAmounts, # this array is not cloned
+      self.minLenNextWord,
+      self.nextWordLen,
+      self.prevWord,
+      self.selection,
+      self.selLen,
+      self.nextLetterIx,
+      self.partialSolution)
+        # ^ this array is not cloned either
+    return r
 
 
-    #FWL = 
 
 
 def dup(l):
@@ -271,15 +404,47 @@ def mult(sol):
   if len(sol) == 0:
     return []
   if len(sol) == 1:
-    return map(lambda s: [s], sol[0])
+    vv = mult1(sol[0])
+    return map(lambda s: [s], vv)
   else:
     r = []
-    head = sol[0]
+    head = mult1(sol[0])
     rest = mult(sol[1:])
     for x in head:
       for y in rest:
         r.append([x] + y)
     return r
+
+def mult1(sol):
+  if len(sol) != 2 or sol[0] < 0:
+    raise Exception("mult1(): aberrant input")
+  N = sol[0]
+  family = sol[1]
+  r = []
+  bt(N, family, r, last = 0)
+  return r
+
+def bt(N, family, r, last, partial = []):
+  if N == 0:
+    r.append(partial)
+    return
+  else:
+    for i in range(last, len(family)):
+      val = family[i]
+      bt(N-1, family, r, i, partial + [val])
+
+
+
+
+
+
+
+# if sol[0] == sol[1]:
+#       rest = mult(sol[2:])
+#       for i in range(len(head)):
+#         for j in range(i + 1, len(head)):
+#           for y in rest:
+#             r.append([])
 
 
 def Join(xs, x):
@@ -294,9 +459,6 @@ def flatten(res):
   r = []
   for sol in res:
     r += mult(sol)
-    # for x in sol[0]:
-    #   for y in sol[1]:
-    #     r.append(x + " " + y)
   r = map(sorted, r)
   r = map(lambda a: Join(a, " "), r)
   return r
@@ -305,67 +467,21 @@ def flatten(res):
 def areAnagrams(wa, wb):
   return sorted(wa) == sorted(wb)
 
-
-
 def testvalid(D, string, n):
   print "test", string, n
   res = D.multiAnagrams(string, n)
+  print res
   flat = flatten(res)
-  #print "dup?", len(dup(flat))
+  print "dup?", len(dup(flat))
   print "reslen=", len(flat)
-  linesToFile(flat, "AAAA" + string + str(n))
+  linesToFile(flat, "A" + string + str(n) + ".tempo")
 
 def main():
-  eith = linesFromFile(dicopath)
-  if eith.isLeft:
-    print eith.leftValue
-    return
-  words = eith.rightValue
-  D = Dico(words)
-      # print D.anagramsOf("AIR")
-      # print D.anagramsOf("TSAR")
-      # print D.anagramsOf("SALI")
-      # print D.anagramsOf("RUSE")
-      # print D.bestOfLength(2)
-      # print D.bestOfLength(3)
-      # print D.bestOfLength(4)
-      # print D.bestOfAll()
-      # print rebuildString("aze", [1,2,6])
-      # pause()
-      # res = D.multiAnagrams("AIRTSARSALI", 3)
-      # print len(res)
-      # print dup(res)
-      # flat = flatten(res)
-      # flat.sort()
-      # print len(flat)
-  # print ("ix", indexOf("AIOLI CONFRATERNEL", flat),
-  #   indexOf("FINALE CORRELATION", flat))
-  # count = 0
-  # for sol in res:
-  #   count += len(sol[0])*len(sol[1])
-  # print count
-  # print areAnagrams("AIOLICONFRATERNEL", "CAROLINEETFLORIAN")
-
-  # if False: # testing how many tests are doable
-  #   for k in range(10):
-  #     p = pow(10, k)
-  #     raw_input("pause ");
-  #     print "pow", k, p
-  #     for i in range(p):
-  #       a = D.anagramsOf("RUSE")
-  # pause("and now")
-  
-  testvalid(D, "CHAMPOLLION", 2)
-  testvalid(D, "CHAMPOLION", 3)
-  testvalid(D, "CHAMPOLLION", 3)
-  testvalid(D, "CHAMPOLION", 4)
-  testvalid(D, "CHAMPOLLION", 4)
-  testvalid(D, "CHAMPOLLION", 1)
-
+  D = Dico.fromFile(dicopath, verbose = True)
+  #testvalid(D, "CHAMPOLLION", 2)
   testvalid(D, "AIRAIR", 2)
-  testvalid(D, "AIRAIRFEUFEU", 4)
-
-  #testvalid(D, "CAROLINEETFLORIAN", 3)
-  # #print flat
-  # linesToFile(flat, "foobbbb")
+  #testvalid(D, "CHAMPOLLION", 4)
+  #testvalid(D, "CHAMPOLLION", 1)
+  #testvalid(D, "CHAMPOLION", 3)
+  #testvalid(D, "CHAMPOLION", 4)
 main()
