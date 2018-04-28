@@ -40,3 +40,31 @@ def mapsum(f, xs):
 # x -> x
 def identity(x):
   return x
+
+
+# x . List x -> Int
+def indexOf(x, ys):
+  for i in range(len(ys)):
+    y = ys[i]
+    if y == x:
+      return i
+  return -1
+
+# List x .
+# (x -> c) ->
+# (List c, List (List x))
+def classify(xs, getClass):
+  # if xs == None:
+  #   return None
+  classes = []
+  groups = []
+  for x in xs:
+    cLass = getClass(x)
+    classIndex = indexOf(cLass, classes)
+    if classIndex == -1:
+      classIndex = len(classes)
+      classes.append(cLass)
+      groups.append([x])
+    else:
+      groups[classIndex].append(x)
+  return (classes, groups)
