@@ -42,16 +42,16 @@ class BTState():
   # BTState -> BTState
   def copy(self):
     r = BTState(self.result) # mostly dummy state
-    (r.nWordsLeft,
-      r.nLettersLeft,
-      r.validLetters,
-      r.validAmounts,
-      r.minLenNextWord,
-      r.nextWordLen,
-      r.prevWord,
-      r.selection,
-      r.selLen,
-      r.nextLetterIx,
+    (r.nWordsLeft,      # Int
+      r.nLettersLeft,   # Int
+      r.validLetters,   # const [Char]
+      r.validAmounts,   # [Int]
+      r.minLenNextWord, # Int
+      r.nextWordLen,    # Int
+      r.prevWord,       # String
+      r.selection,      # String
+      r.selLen,         # Int
+      r.nextLetterIx,   # Int
       r.partialSolution) = (self.nWordsLeft,
       self.nLettersLeft,
       self.validLetters,

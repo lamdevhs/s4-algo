@@ -8,15 +8,14 @@ from Dico import (DICO, wordSum)
 
 # === est_presque_anagramme()
 
-# Smarter version.
-#
 # String . String . Int -> Bool
 def est_presque_anagramme(a, b, n):
   aL = len(a)
   bL = len(b)
   if len(a) > len(b):
     a, b, aL, bL = b, a, bL, aL
-  # a <= b
+
+  # now, a <= b
   b = sorted(b)
 
   if aL + n != bL:
@@ -50,144 +49,61 @@ def est_presque_anagramme(a, b, n):
 
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+# Backtracking algorithm. lastChoice is used to
+# force the additional letters to be chosen in
+# ascending order, to avoid duplicates.
+#
 # String . Int -> List String
-def presque_anagrammes(word, n, lastChoice = 0, r = None):
-  if r == None: # first call
-    r = [] # this array is common to the whole stack of calls
+def presque_anagrammes(word, n, lastChoice = 0, result = None):
+  if result == None: # first call
+    result = [] # this array is common to the whole stack of calls
   if n == 0:
-    r += DICO.anagramsOf(word)
-    return r
+    result += DICO.anagramsOf(word)
+    return result
   else:
     # `lastChoice` forces the chosen letters to be in
     # ascending order, to avoid getting duplicates, since
-    # ABA = BAA = AAB
-    for choice in range(lastChoice, 26):
+    # word + ABA = word + BAA = word + AAB
+    for choice in range(lastChoice, len(alphabet)):
       letter = alphabet[choice]
-      presque_anagrammes(word + letter, n - 1, choice, r)
-    return r
+      presque_anagrammes(word + letter, n - 1, choice, result)
+    return result
 
-# Works in theory, but way too slow
+
 #
 # Int . Int -> (Int, List Family)
-def bestNearOfLength_naive(L, N):
+def bestNearOfLength(L, N):
   if len(DICO.dico) <= L or L < 0:
     return (0, [])
 
-  subdico = DICO.dico[L]
-  # ^ `subdico` contains all the families of the
+  ofSameLen = DICO.dico[L]
+  # ^ `ofSameLen` contains all the families of the
   # words of length `L` -- cf Dico.py, or README
 
-  if subdico == None:
+  if ofSameLen == None:
     # ^ no families for this length
     return (0, [])
 
-  bestSize = 0
-  #bestFamilies = []
-  for sumGroup in subdico:
-    # sumGroup: contains families with same `wordSum`
+  maxSize = 0
+  bestFamilies = []
+  for ofSameSum in ofSameLen:
+    # ofSameSum: contains families with same `wordSum`
     # cf Dico.py, README
-    if sumGroup != None:
-      (_, families) = sumGroup
-      for index in range(len(families)):
-        family = families[index]
+    if ofSameSum != None:
+      (signatures, families) = ofSameSum
+      for family in families:
         spokesword = family[0]
           # ^ we pick one word as representative
           # of the family
         nearFamily = presque_anagrammes(spokesword, N)
           # ^ we get all the words nearly of the same family
         size = len(nearFamily)
-        if size > bestSize:
-          bestSize = size
-          #bestFamilies = [(family[:], nearFamily[:])]
-        elif size == bestSize:
-          pass
-          #bestFamilies.append((family[:], nearFamily[:]))
-          # ^ we add the family, not the near family of course
-  return bestSize #(bestSize, bestFamilies)
-
-# A lightweight version of presque_anagrammes()
-# which only cares about how many near anagrams a word has,
-# and only for `n = 1`.
-#
-# String -> Int
-def numberOfNearAnagrams(word):
-  r = 0
-  for letter in alphabet:
-    r += len(DICO.anagramsOf(word + letter))
-    # r += DICO.nbAnagramsOf(word + letter)
-  return r
-
-
-#
-# String -> Int
-def fofofo(word):
-  L = len(word) + 1
-  if L >= len(DICO.dico):
-    return 0
-
-  lenGrp = DICO.dico[L]
-  if lenGrp == None:
-    return 0
-  
-  result = 0
-  for letter in alphabet:
-    nword = sorted(word + letter)
-    SS = wordSum(nword)
-    if SS >= len(lenGrp):
-      continue
-    sumGrp = lenGrp[SS]
-    if sumGrp == None:
-      continue
-  
-    (signatures, families) = sumGrp
-    sig = nword
-    ix = indexOf_div(sig, signatures)
-    if ix == -1:
-      continue
-    else:
-      result += len(families[ix])
-
-  return result
-
-
-#
-# Int . Int -> (Int, List Family)
-def bestNearOfLength(L):
-  if len(DICO.dico) <= L or L < 0:
-    return (0, [])
-
-  subdico = DICO.dico[L]
-  # ^ `subdico` contains all the families of the
-  # words of length `L` -- cf Dico.py, or README
-
-  if subdico == None:
-    # ^ no families for this length
-    return (0, [])
-
-  bestSize = 0
-  bestFamilies = []
-  for sumGroup in subdico:
-    # sumGroup: contains families with same `wordSum`
-    # cf Dico.py, README
-    if sumGroup != None:
-      (_, families) = sumGroup
-      for index in range(len(families)):
-        family = families[index]
-        spokesword = family[0]
-          # ^ we pick one word as representative
-          # of the family
-        nearFamilySize = fofofo(spokesword)
-          # ^ we get all the words nearly of the same family
-        size = nearFamilySize
-        if size > bestSize:
-          bestSize = size
+        if size > maxSize:
+          maxSize = size
           bestFamilies = [family[:]]
-        elif size == bestSize:
-          pass
+        elif size == maxSize:
           bestFamilies.append(family[:])
-          # ^ we add the family, not the near family of course
-  return (bestSize, bestFamilies)
-
+  return (maxSize, bestFamilies)
 
 
 if __name__ == "__main__":
@@ -195,22 +111,33 @@ if __name__ == "__main__":
   print "Partie B - Questions"
   print "Combien de (familles de) mots possedent\
  un nombre maximal de presque_anagrammes (pour N = 1) ?"
-  print len(presque_anagrammes("SATIRE", 1))
-  #exit(0)
-  for i in range(16):
-    #print bestNearOfLength_naive(i, 1)
-    print bestNearOfLength(i)
-  exit(0)
-  results = map(bestNearOfLength, range(16))
-  print "done res"
-  maxi = 0
-  maxiL = []
-  for i in range(16):
-    #print results[i]
-    if results[i][0] > maxi:
-      maxiL = [ results[i][1] ]
-      maxi = results[i][0]
-    elif results[i][0] == maxi:
-      maxiL.append(results[i][1])
-  print maxi
-  print maxiL
+  allResults = []
+  for L in range(len(DICO.dico)):
+    res = bestNearOfLength(L, 1)
+    allResults.append(res)
+    print "- pour les mots de longueur", L, ":"
+    print "   ", len(res[1]), "famille(s) ayant",
+    print res[0], "presque-anagrammes."
+
+  print
+  print "Resultat global maximal :"
+  globalMax = 0
+  globalSolution = []
+  for res in allResults:
+    (size, families) = res
+    if size > globalMax:
+      globalMax = size
+      globalSolution = [ families ]
+    elif size == globalMax:
+      globalSolution += families
+  print "   ", len(globalSolution), "famille(s) ont",
+  print globalMax, "presque-anagrammes."
+
+  print "Ces familles ont-elles des mots tous de meme taille ?"
+  sameLen = True
+  firstLen = len(globalSolution[0][0])
+  for family in globalSolution:
+    if len(family[0]) != firstLen:
+      sameLen = False
+      break
+  print "Oui !" if sameLen else "Non !"

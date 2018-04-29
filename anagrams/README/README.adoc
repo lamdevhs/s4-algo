@@ -5,6 +5,9 @@
 
 Tout a été traité et testé, et tout est fonctionnel.
 
+Les réponses aux questions posées dans le PDF d'instruction pour chacune des diverses parties peuvent être visualisées en exécutant chacun des fichiers `A.py`, `B.py` et `C.py`. Le code correspondant est à la fin de chaque fichier.
+
+
 Algorithmes choisis::
 _backtracking_ pour la grande majorité des fonctions les plus importantes, simplement parce que cela semble la seule manière possible de procéder ; _diviser pour régner_ a été utilisé pour écrire `indexOf_div`, pour tirer partie du fait que certaines listes ont été triées une fois pour toutes, ce qui permet de réduire considérablement l'accès répété aux éléments de celles-ci (cf *Partie B*).
 
@@ -32,11 +35,11 @@ Le coeur de l'efficacité de ce programme est basée sur l'idée d'indexer et de
 
 La manière la plus simple de l'expliquer est de donner un exemple d'utilisation. Soit `s` une chaîne de caractère de longueur `L`. On cherche sa famille, c'est-à-dire la liste des mots du dictionnaire qui sont anagrammes de `s`. La signature `sig` de `s` est donc celle de sa famille, et est de longueur `L`.
 
-On récupère donc tout d'abord `lengrp := DICO.dico[L]`, qui est une liste qui contient (qui "groupe") indirectement toutes les familles dont la signature est de longueur `L`. Dans le cas où `lengrp == None`, cela signifie que le dictionnaire ne contient pas de mots de longueur `L`.
+On récupère donc tout d'abord `ofSameLen := DICO.dico[L]`, qui est une liste qui contient (qui "groupe") indirectement toutes les familles dont la signature est de longueur `L`. Dans le cas où `ofSameLen == None`, cela signifie que le dictionnaire ne contient pas de mots de longueur `L`.
 
-Dans le cas contraire, l'on récupère `S := wordSum(s)`. C'est (à peu de chose près) la somme des lettres de `s`, avec `A = 1, ..., Z = 26`. On remarque que `wordSum(sig) == wordSum(s)`. On récupère alors `sumgrp := lengrp[S]`, qui contient indirectement toutes les familles de longueur `L` et de somme `S`. Là encore, si `sumgrp == None`, il n'existe pas d'anagrammes pour `s` dans ce dictionnaire.
+Dans le cas contraire, l'on récupère `S := wordSum(s)`. C'est (à peu de chose près) la somme des lettres de `s`, avec `A = 1, ..., Z = 26`. On remarque que `wordSum(sig) == wordSum(s)`. On récupère alors `ofSameSum := ofSameLen[S]`, qui contient indirectement toutes les familles de longueur `L` et de somme `S`. Là encore, si `ofSameSum == None`, il n'existe pas d'anagrammes pour `s` dans ce dictionnaire.
 
-Sinon, `sumgrp = (sigs, families)` est un tuple. `sigs : List String` est une liste de signatures. `families : List Family` contient les familles qui correspondent respectivement aux diverses signatures dans `sigs`. Lors de la construction de `DICO`, `sigs` a été trié, de telle sorte qu'une recherche dichotomique est applicable pour trouver l'index `ix` de la signature `sig` de `s` dans `sigs`.
+Sinon, `ofSameSum =: (signatures, families)` est un tuple. `signatures : List String` est une liste de signatures. `families : List Family` contient les familles qui correspondent respectivement aux diverses signatures dans `signatures`. Lors de la construction de `DICO`, `signatures` a été trié, de telle sorte qu'une recherche dichotomique est applicable pour trouver l'index `ix` de la signature `sig` de `s` dans `signatures`.
 
 Si `ix == -1`, la recherche a échoué : pas d'anagrammes. Sinon, alors la famille de `s` sera précisément `families[ix]`. Cet "algorithme" est basiquement comment est écrit la fonction `Dico.anagramsOf`, qui prend une chaîne en entrée et renvoie sa famille dans le dictionnaire.
 
@@ -44,7 +47,7 @@ La construction de `DICO.dico` prend entre 5 et 10 secondes, mais une fois que c
 
 === Partie B - Algorithme pour `presque_anagrammes()`
 
-Je me suis heurté à un vrai problème d'efficacité : la recherche des mots ayant le nombre maximal de presque anagrammes mettait à l'origine plus de deux minutes. J'ai réussi cependant à réduire le temps à environ 50 secondes en mettant en place le tri des signatures dans les `sumgrp`, ce qui permet une recherche dichotomique au lieu d'une recherche séquentielle.
+Je me suis heurté à un vrai problème d'efficacité : la recherche des mots ayant le nombre maximal de presque anagrammes mettait à l'origine plus de deux minutes. J'ai réussi cependant à réduire le temps à environ 50 secondes en mettant en place le tri des signatures dans les `ofSameSum`, ce qui permet une recherche dichotomique au lieu d'une recherche séquentielle.
 
 === Partie C
 
@@ -54,7 +57,7 @@ Cette fonction est le moteur principal de `A1` et `A2`. Elle récupère tous les
 
 Il est en effet difficile d'éviter de récupérer plusieurs fois les mêmes solutions. Le premier pas a été de faire en sorte que la longueur des mots soit toujours croissante en profondeur, puisque `[SEL, LE] == [LE, SEL]`. Mais ce fut loin d'être suffisant.
 
-Par exemple, si deux familles `F` et `G` ont des signatures de même longueur, on risque d'avoir des doublons du type `[F G] == [G F]`. On gère ce problème en faisant en sorte que la signature des mots soit croissante (alphabétiquement parlant) en profondeur, dans le cas où deux signatures côte à côte sont de même longueur.
+Par exemple, si deux familles `F` et `G` ont des signatures de même longueur, on risque d'avoir des doublons du type `[F G] == [G F]`. On gère ce problème en faisant en sorte que la signature des mots soit croissante (alphabétiquement parlant) en profondeur, dans le cas où deux signatures se suivent et sont de même longueur.
 
 L'algorithme nécessite tant de paramètres (une dizaine), que j'ai préféré créer une classe `BTState` (pour _state of the backtracker_) pour contenir tous les paramètres nécessaires.
 

@@ -1,9 +1,7 @@
 # = ANAGRAMMES - Projet Algorithmique Avancee
 # [Nathanael Bayard] [2017 2018]
 
-# Note: type "Family" == type "List String"
-# *Family* = list of words sharing the same letters
-# aka, the *family* of a word is the sets of its anagrams
+# Note: I recommend reading README.pdf first.
 
 # == Partie A
 
@@ -33,67 +31,65 @@ def best(L):
   if len(DICO.dico) <= L or L < 0:
     return (0, [])
 
-  subdico = DICO.dico[L]
-  # ^ `subdico` contains all the families of the
+  ofSameLen = DICO.dico[L]
+  # ^ `ofSameLen` contains all the families of the
   # words of length `L` -- cf Dico.py, or README
 
-  if subdico == None:
+  if ofSameLen == None:
     # ^ no families for this length
     return (0, [])
 
-  bestSize = 0
+  maxSize = 0
   bestFamilies = []
-  for sumGroup in subdico:
-    # sumGroup: contains families with same `wordSum`
+  for ofSameSum in ofSameLen:
+    # ofSameSum: contains families with same `wordSum`
     # cf Dico.py, README
-    if sumGroup != None:
-      (_, families) = sumGroup
-      # for index in range(len(families)):
-      #  family = families[index]
+    if ofSameSum != None:
+      (_, families) = ofSameSum
       for family in families:
         size = len(family)
-        if size > bestSize:
-          bestSize = size
+        if size > maxSize:
+          maxSize = size
           bestFamilies = [family[:]]
-        elif size == bestSize:
+        elif size == maxSize:
           bestFamilies.append(family[:])
-  return (bestSize, bestFamilies)
 
+  return (maxSize, bestFamilies)
 
 # Returns all the families  of maximum size,
 # regardless of the length of the words inside.
 #
 # Algorithm: gets the results of best() for all
-# lengths, then retain those which have maximum size.
+# lengths, then retain those which have maximum size
+# among all those results.
 #
 # Int -> (Int, List Family)
 def bestOfAll():
-  bestSize = 0
+  maxSize = 0
   bestFamilies = []
   limit = len(DICO.dico)
   for L in range(limit):
     (size, families) = best(L)
-    if bestSize < size:
-      bestSize = size
+    if maxSize < size:
+      maxSize = size
       bestFamilies = families
-    elif bestSize == size:
+    elif maxSize == size:
       bestFamilies += families
 
-  return (bestSize, bestFamilies)
+  return (maxSize, bestFamilies)
 
 if __name__ == "__main__":
   print "-"*20
   print "Partie A - Questions"
-  (bestSize, bestFamilies) = bestOfAll()
   print "Combien de familles d'anagrammes sont de taille maximale ?"
+  (bestSize, bestFamilies) = bestOfAll()
   print "reponse =", len(bestFamilies)
   print "Quelle est cette taille ?"
   print "reponse =", bestSize
   print "Ces familles contiennent-elles toutes des mots d'une meme longueur ?"
   sameLength = True
   firstLength = len(bestFamilies[0][0])
-  for i in range(len(bestFamilies)):
-    family = bestFamilies[i]
+  for family in bestFamilies:
     if len(family[0]) != firstLength:
       sameLength = False
       break

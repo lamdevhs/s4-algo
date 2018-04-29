@@ -3,26 +3,33 @@ import sys
 from Tools import (mapsum, indexOf_div,
   linesFromFile, classify, indexOf)
 
+# Takes a character c, returns:
+# - 1 if c == A,
+# - 2 if c == B,
+# etc.
+#
 # Char -> Int
 def letter2int(char):
   return ord(char) - ord('A') + 1
 
-# String -> Int
-def wordHead(string):
-  return letter2int(string[0])
-
-zed = letter2int('Z')
-
+# More or less returns the sum of the letters of
+# the given input, with A = 1, B = 2, etc.
+# (The actual formula is a bit different because i noticed
+# it made the access process slightly faster.)
+#
 # String -> Int
 def wordSum(word):
-  #return mapsum(letter2int, word)
-  letters = sorted(word)
-    # ^ TODO: maybe find a way not to do it twice
-  A = letter2int(letters[0])
-  Z = letter2int(letters[-1])
+  sortedLetters = sorted(word)
+  smallest = letter2int(sortedLetters[0])
+  biggest = letter2int(sortedLetters[-1])
   return (mapsum(letter2int, word)
-    + (A + Z)*7)
+    + (smallest + biggest)*7)
 
+# Mutates an array by appending dummy elements
+# until the length of the array is at least equal
+# to `n + 1`, aka until the index xs[n] is not out
+# of bounds.
+#
 # List (List a) ->
 # List (List a) [mutate]
 def grow(xs, n):
@@ -32,6 +39,12 @@ def grow(xs, n):
     xs.append(None)
   return xs
 
+# Takes a list xs and a function f.
+# Returns an array containing lists of
+# elements which share the same image wrt
+# the function f. The index of those sublists
+# is the very image by f of any element in it.
+#
 # List x .
 # (x -> Int) ->
 # List (List x)
@@ -48,10 +61,18 @@ def group(xs, f):
     r[key].append(x)
   return r
 
+# Takes a list `xs`, and a list of functions `fs`.
+# Each function takes an element of `xs` and returns
+# an integer, which is used as indexes to create a
+# multidimensional array that allows for direct access
+# of subsets of the original list via the operator `array[ix]`.
+#
+# The first function is used to create the first level of
+# the multidimensional array of output, and so on.
+#
 # List x .
 # List (x -> Int) ->
 # List (... (List x)...)
-# TODO: optimise for in-place mutation if possible
 def multigroup(xs, fs):
   if xs == None:
     return None
@@ -70,7 +91,6 @@ def multigroup(xs, fs):
 class Dico():
   # Dico . List String -> Dico
   def __init__(self, words, verbose = False):
-    # self.dico = multigroup(words, [wordHead, len, wordSum])
     if verbose:
       print "building Dico..."
     self.dico = multigroup(words, [len, wordSum])
@@ -81,15 +101,15 @@ class Dico():
     if verbose:
       sys.stdout.write("creating families... ")
       sys.stdout.flush()
-    for lenGrp in self.dico:
+    for ofSameLen in self.dico:
       if verbose:
         sys.stdout.write("#")
         sys.stdout.flush()
-      if lenGrp != None:
-        for i in range(len(lenGrp)):
-          sumGrp = lenGrp[i]
-          if sumGrp != None:
-            lenGrp[i] = classify(sumGrp, sorted)
+      if ofSameLen != None:
+        for i in range(len(ofSameLen)):
+          ofSameSum = ofSameLen[i]
+          if ofSameSum != None:
+            ofSameLen[i] = classify(ofSameSum, sorted)
     
     if verbose:
       print
@@ -110,74 +130,63 @@ class Dico():
     L = len(word)
     if L >= len(self.dico):
       return []
-    lenGrp = self.dico[L]
-    if lenGrp == None:
+    ofSameLen = self.dico[L]
+    if ofSameLen == None:
       return []
     
     S = wordSum(word)
-    if S >= len(lenGrp):
+    if S >= len(ofSameLen):
       return []
-    sumGrp = lenGrp[S]
-    if sumGrp == None:
+    ofSameSum = ofSameLen[S]
+    if ofSameSum == None:
       return []
     
-    (classes, groups) = sumGrp
-    cLass = sorted(word)
-    ix = indexOf_div(cLass, classes)
+    (signatures, families) = ofSameSum
+    sig = sorted(word)
+    ix = indexOf_div(sig, signatures)
     if ix == -1:
-      return [] # ?? or None?
+      return []
     else:
-      return groups[ix][:]
+      return families[ix][:]
 
-        # # Dico . String -> Int
-        # def nbAnagramsOf(self, word):
-        #   L = len(word)
-        #   if L >= len(self.dico):
-        #     return 0
-        #   lenGrp = self.dico[L]
-        #   if lenGrp == None:
-        #     return 0
-          
-        #   S = wordSum(word)
-        #   if S >= len(lenGrp):
-        #     return 0
-        #   sumGrp = lenGrp[S]
-        #   if sumGrp == None:
-        #     return 0
-          
-        #   (classes, groups) = sumGrp
-        #   cLass = sorted(word)
-        #   ix = indexOf(cLass, classes)
-        #   if ix == -1:
-        #     return 0 # ?? or None?
-        #   else:
-        #     return len(groups[ix])
-
+  # Takes a length L, returns a list of
+  # families which all are of the biggest
+  # size for that given length. The integer
+  # of the output is that very size.
+  #
   # Dico . Int ->
-  # (Int, List (List String))
+  # (Int, List Family)
   def bestOfLength(self, L):
     if len(self.dico) <= L or L < 0:
       return (0, [])
-    subdico = self.dico[L]
-    if subdico == None:
-      return (0, [])
-    maxAmount = 0
-    results = []
-    for sumGrp in subdico:
-      if sumGrp != None:
-        (classes, wordgroups) = sumGrp
-        for classIx in range(len(classes)):
-          wgrp = wordgroups[classIx]
-          N = len(wgrp)
-          if N > maxAmount:
-            maxAmount = N
-            results = [wgrp[:]]
-          elif N == maxAmount:
-            results.append(wgrp[:])
-    return (maxAmount, results)
 
+    ofSameLen = self.dico[L]
+    if ofSameLen == None:
+      return (0, [])
+
+    maxSize = 0
+    bestFamilies = []
+
+    for ofSameSum in ofSameLen:
+      if ofSameSum != None:
+        (_, families) = ofSameSum
+        for familyIx in range(len(families)):
+          family = families[familyIx]
+          size = len(family)
+          if size > maxSize:
+            maxSize = size
+            bestFamilies = [family[:]]
+          elif size == maxSize:
+            bestFamilies.append(family[:])
+    return (maxSize, bestFamilies)
+
+  # Returns a list of
+  # families which all are of the biggest
+  # size for all possible lengths. The integer
+  # of the output is that very size.
+  #
   # Dico ->
-  # (Int, List (List String))
+  # (Int, List Family)
   def bestOfAll(self):
     currentBest = (0, [])
     for L in range(len(self.dico)):
@@ -201,20 +210,3 @@ dicopath = "dico.txt"
 #
 # Dico
 DICO = Dico.fromFile(dicopath, verbose = True)
-
-if True:
-  no = 0
-  NN = 0
-  for L in range(len(DICO.dico)):
-    d1 = DICO.dico[L]
-    if d1 != None:
-      for S in range(len(d1)):
-        d2 = d1[S]
-        if d2 != None:
-          (sigs, families) = d2
-          no += 1
-          for fam in families:
-            NN += len(fam)
-          if sorted(sigs) != sigs:
-            no += 1
-  print "no", no, NN
