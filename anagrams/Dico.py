@@ -149,62 +149,12 @@ class Dico():
     else:
       return families[ix][:]
 
-  # Takes a length L, returns a list of
-  # families which all are of the biggest
-  # size for that given length. The integer
-  # of the output is that very size.
-  #
-  # Dico . Int ->
-  # (Int, List Family)
-  def bestOfLength(self, L):
-    if len(self.dico) <= L or L < 0:
-      return (0, [])
-
-    ofSameLen = self.dico[L]
-    if ofSameLen == None:
-      return (0, [])
-
-    maxSize = 0
-    bestFamilies = []
-
-    for ofSameSum in ofSameLen:
-      if ofSameSum != None:
-        (_, families) = ofSameSum
-        for familyIx in range(len(families)):
-          family = families[familyIx]
-          size = len(family)
-          if size > maxSize:
-            maxSize = size
-            bestFamilies = [family[:]]
-          elif size == maxSize:
-            bestFamilies.append(family[:])
-    return (maxSize, bestFamilies)
-
-  # Returns a list of
-  # families which all are of the biggest
-  # size for all possible lengths. The integer
-  # of the output is that very size.
-  #
-  # Dico ->
-  # (Int, List Family)
-  def bestOfAll(self):
-    currentBest = (0, [])
-    for L in range(len(self.dico)):
-      best = self.bestOfLength(L)
-      if currentBest[0] < best[0]:
-        currentBest = best
-      elif currentBest[0] == best[0]:
-        currentBest = (best[0],
-          currentBest[1] + best[1])
-    return currentBest
-
-
 
 # ----
 # String
 dicopath = "dico.txt"
 
-# The one and only dictionnary, used to get very fast
+# The one dictionnary, used to get very fast
 # access to any word's families of known anagrams.
 # Is imported by the other files as global variable.
 #

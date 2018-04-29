@@ -2,7 +2,7 @@
 
 
 
-# == Partie A -- Tests
+# == Partie B -- Tests
 
 from Tools import nDuplicates
 from UnitTest import Test

@@ -51,3 +51,11 @@ class Test():
             "expected output",
             "real output"]] + self.results
       print toPrettyStringLL(report)
+
+#   assertion : String . Bool -> Void [IO]
+def assertion(name, value):
+  print 'assertion "' + name + '"',
+  if value:
+    print "succeeded."
+  else:
+    print "failed."

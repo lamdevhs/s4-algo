@@ -12,12 +12,10 @@ from Dico import (DICO, wordSum)
 def est_presque_anagramme(a, b, n):
   aL = len(a)
   bL = len(b)
-  if len(a) > len(b):
+  if aL > bL:
     a, b, aL, bL = b, a, bL, aL
 
-  # now, a <= b
-  b = sorted(b)
-
+  # now, aL <= bL
   if aL + n != bL:
     return False
 
@@ -69,7 +67,9 @@ def presque_anagrammes(word, n, lastChoice = 0, result = None):
       presque_anagrammes(word + letter, n - 1, choice, result)
     return result
 
-
+# Returns all the families of words of length L which
+# have the biggest amount of near anagrams.
+# N is the factor of nearness.
 #
 # Int . Int -> (Int, List Family)
 def bestNearOfLength(L, N):
