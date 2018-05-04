@@ -1,7 +1,10 @@
 
 import sys
-from Tools import (mapsum, indexOf_div,
-  linesFromFile, classify, indexOf)
+from Tools import (mapsum, linesFromFile,
+  classify, indexOf,
+  classify_div, indexOf_div,
+  leftSorting, unzip)
+import time
 
 # Takes a character c, returns:
 # - 1 if c == A,
@@ -92,12 +95,14 @@ class Dico():
   # Dico . List String -> Dico
   def __init__(self, words, verbose = False):
     if verbose:
-      print "building Dico..."
+      beforeTime = time.clock()
+      print "building Dico"
     self.dico = multigroup(words, [len, wordSum])
+    self.optimized = False
     if verbose:
       print "indexing done."
 
-    # set up families:
+    # setting up families:
     if verbose:
       sys.stdout.write("creating families... ")
       sys.stdout.flush()
@@ -109,11 +114,11 @@ class Dico():
         for i in range(len(ofSameLen)):
           ofSameSum = ofSameLen[i]
           if ofSameSum != None:
-            ofSameLen[i] = classify(ofSameSum, sorted)
+              ofSameLen[i] = classify(ofSameSum, sorted)
     
     if verbose:
       print
-      print "Dico done."
+      print "Dico done. Time spent:", time.clock() - beforeTime
 
   # Path -> Dico
   @staticmethod
@@ -143,12 +148,39 @@ class Dico():
     
     (signatures, families) = ofSameSum
     sig = sorted(word)
-    ix = indexOf_div(sig, signatures)
+    if self.optimized:
+      # if Dico.optimize() was called,
+      # the `signatures` is now a sorted list,
+      # so we can use indexOf_div, which uses a
+      # divide-and-conquer approach, to speed the
+      # search process quite a bit.
+      ix = indexOf_div(sig, signatures)
+    else:
+      ix = indexOf(sig, signatures)
     if ix == -1:
       return []
     else:
       return families[ix][:]
 
+  # Optimizing the dictionnary by sorting the
+  # families based on their signatures, which allows
+  # anagramsOf() to use a divide-and-conquer search
+  # through the signatures similar the input's.
+  #
+  # Dico -> Void
+  def optimize(self):
+    print "Starting Dico.optimize()..."
+    for ofSameLen in self.dico:
+      if ofSameLen != None:
+        for i in range(len(ofSameLen)):
+          ofSameSum = ofSameLen[i]
+          if ofSameSum != None:
+            (signatures, families) = ofSameSum
+            z = zip(signatures, families)
+            z.sort(leftSorting)
+            ofSameLen[i] = unzip(z)
+    print "Dico.optimize() done"
+    self.optimized = True
 
 # ----
 # String

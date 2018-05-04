@@ -3,8 +3,10 @@
 
 # == Partie B
 
+import time
 from Tools import classify, identity, indexOf, indexOf_div, nDuplicates
 from Dico import (DICO, wordSum)
+
 
 # === est_presque_anagramme()
 
@@ -107,10 +109,16 @@ def bestNearOfLength(L, N):
 
 
 if __name__ == "__main__":
+  #DICO.optimize()
+  # ^ optimizations are needed to make the code
+  # below work in about 60s instead of over 120s.
+  # cf README
+
   print "-"*20
   print "Partie B - Questions"
   print "Combien de (familles de) mots possedent\
  un nombre maximal de presque_anagrammes (pour N = 1) ?"
+  beforeTime = time.clock()
   allResults = []
   for L in range(len(DICO.dico)):
     res = bestNearOfLength(L, 1)
@@ -118,6 +126,7 @@ if __name__ == "__main__":
     print "- pour les mots de longueur", L, ":"
     print "   ", len(res[1]), "famille(s) ayant",
     print res[0], "presque-anagrammes."
+  print "--- Total time:", time.clock() - beforeTime
 
   print
   print "Resultat global maximal :"

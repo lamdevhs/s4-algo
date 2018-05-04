@@ -1,7 +1,8 @@
 
 from copy import copy
 from Tools import (linesToFile, identity, classify)
-from Dico import (Dico, DICO)
+from Dico import (DICO)
+import time
 
 
 
@@ -71,6 +72,12 @@ def multiAnagrams(inputString, numberOfWords):
   result = []
   inputString = sorted(inputString)
   (letters, grouped) = classify(inputString, identity)
+  # ^ inputString == 'aabezzz'
+  # --> (letters, grouped) ==
+  #   (['a', 'b', 'e', 'z'],
+  #    [['a', 'a'], ['b'], ['e'], ['z', 'z', 'z']])
+  # therefore:
+  # map(len, grouped) == [2,1,1,3]
 
   S = BTState(
     result = result,
@@ -319,6 +326,7 @@ def A2(letters, N):
 
 
 if __name__ == "__main__":
+  DICO.optimize()
   for word in ["ROSE", "PROSE", "CHAMPOLLION"]:
     res = A1(word)
     print word, len(res)
@@ -326,5 +334,9 @@ if __name__ == "__main__":
   for n in range(1, 6):
     res = A2("CHAMPOLLION", n)
     print n, len(res)
-  for i in range(10):
-    print len(A2("CAROLINEETFLORIAN", i))
+  beforeTime = time.clock()
+  for i in range(5):
+    #print len(A2("CAROLINEETFLORIAN", i))
+    multiAnagrams("CAROLINEETFLORIAN", i)
+    print i
+  print "Time:", time.clock() - beforeTime

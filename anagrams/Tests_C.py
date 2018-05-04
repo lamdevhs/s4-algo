@@ -6,7 +6,7 @@
 # == Partie C -- Tests
 
 from UnitTest import Test, assertion
-from C3 import multiAnagrams, A1, A2
+from C import multiAnagrams, A1, A2
 
 def testingPartC():
   count_A1 = lambda word: len(A1(word))
@@ -53,7 +53,6 @@ def testingPartC():
   def toListOfString(xs):
     return map(lambda L: " ".join(L), xs)
 
-  # aioli : List String
   aioli = toListOfString(A2("CAROLINEETFLORIAN", 2))
   assertion('A2(CAROLINEETFLORIAN,2)',
     "AIOLI CONFRATERNEL" in aioli and
@@ -72,46 +71,5 @@ def testingPartC():
     "ME RE GO FAT" in cheese and
     "ET GO FERMA" in cheese)
 
-
-
 if __name__ == "__main__":
   testingPartC()
-
-          # def dup(l):
-          #   r = []
-          #   for i in range(len(l)):
-          #     for j in range(i + 1, len(l)):
-          #       if l[i] == l[j]:
-          #         r.append(l[i])
-          #   return r
-
-          # def testvalid(D, string, n):
-          #   print "test", string, n
-          #   res = multiAnagrams(string, n)
-          #   #print res
-          #   flat = flatten(res)
-          #   print "dup?", len(dup(flat))
-          #   print "reslen=", len(flat)
-          #   linesToFile(flat, "A" + string + str(n) + ".tempo")
-
-          # def main2():
-          #   D = DICO
-          #   #testvalid(D, "CHAMPOLLION", 2)
-          #   testvalid(D, "AIRAIR", 2)
-          #   testvalid(D, "CHAMPOLLION", 4)
-          #   #testvalid(D, "CHAMPOLLION", 1)
-          #   testvalid(D, "CHAMPOLLION", 3)
-          #   #testvalid(D, "CHAMPOLION", 4)
-
-          # if __name__ == "__main__":
-          #   for word in ["ROSE", "PROSE", "CHAMPOLLION"]:
-          #     res = A1(word)
-          #     print word, len(res)
-
-          #   for n in range(1, 6):
-          #     res = A2("CHAMPOLLION", n)
-          #     print n, len(res)
-          #   for i in range(10):
-          #     print len(A2("CAROLINEETFLORIAN", i))
-
-
