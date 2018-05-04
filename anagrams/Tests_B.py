@@ -5,7 +5,7 @@
 # == Partie B -- Tests
 
 from Tools import nDuplicates
-from UnitTest import Test
+from UnitTest import Test, assertion
 from B import est_presque_anagramme, presque_anagrammes
 
 def testingPartB():
@@ -42,33 +42,36 @@ def testingPartB():
   # ^ il n'y a en fait que 19 presque anagrammes, et non 20,
   # pour 'PAR'. en effet, la liste du PDF d'instructions
   # contenait 2 fois le mot 'PARI'.
+  assertion("presque_anagrammes('PAR', 1)",
+    sorted(near_anagrams_of_PAR) ==
+    sorted(presque_anagrammes("PAR", 1)))
+  # Test(presque_anagrammes
+  #   ).check(  input = ("PAR", 1),
+  #             output = near_anagrams_of_PAR,
+  #             testName = 1
+  #   ).printResults()
 
-  Test(presque_anagrammes
-    ).check(  input = ("PAR", 1),
-              output = near_anagrams_of_PAR,
-              testName = 1
-    ).printResults()
-
-  print "-"*20
+  print
   # String . Int -> Bool
   def checkResults_presque_anagrammes(word, n):
     print ("checking results for presque_anagrammes"
       + str((word,n)))
     result = presque_anagrammes(word, n)
     ndup = nDuplicates(result)
-    print "number of duplicated answers :", ndup
+    print "... number of duplicated answers :", ndup
     nInvalid = 0
     for answer in result:
       if not est_presque_anagramme(word, answer, n):
         nInvalid += 1
-    print "number of invalid answers :", nInvalid
+    print "... number of invalid answers :", nInvalid
     isOk = (nInvalid, ndup) == (0,0)
     return isOk
 
   word = "PAR"
   for i in range(1,6):
     isOk = checkResults_presque_anagrammes(word, i)
-    print "ok:", isOk
+    print "... all ok:", isOk
+    print
 
 if __name__ == "__main__":
   testingPartB()

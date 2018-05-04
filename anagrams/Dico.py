@@ -96,19 +96,19 @@ class Dico():
   def __init__(self, words, verbose = False):
     if verbose:
       beforeTime = time.clock()
-      print "building Dico"
+      print "building Dico..."
     self.dico = multigroup(words, [len, wordSum])
     self.optimized = False
     if verbose:
-      print "indexing done."
+      print "... indexing done"
 
     # setting up families:
-    if verbose:
-      sys.stdout.write("creating families... ")
-      sys.stdout.flush()
-    for ofSameLen in self.dico:
+    maxL = len(self.dico)
+    for i in range(maxL):
+      ofSameLen = self.dico[i]
       if verbose:
-        sys.stdout.write("#")
+        sys.stdout.write("\r... creating families... ({}/{})"
+          .format(str(i), maxL - 1))
         sys.stdout.flush()
       if ofSameLen != None:
         for i in range(len(ofSameLen)):
@@ -117,8 +117,9 @@ class Dico():
               ofSameLen[i] = classify(ofSameSum, sorted)
     
     if verbose:
-      print
+      print # newline
       print "Dico done. Time spent:", time.clock() - beforeTime
+      print # blank line for separation
 
   # Path -> Dico
   @staticmethod

@@ -24,28 +24,37 @@ class Test():
     self.name = functionToTest.func_name
     self.results = []
   
-  #   check : Test (a -> b) . a . b . String -> Void [IO]
+  #   check : Test (a -> b) . a . b . String -> Test (a -> b)
   def check(self, input, output, testName = "untitled test"):
     actualOutput = self.toTest(*input)
     if actualOutput != output:
       self.results.append([testName, input, output, actualOutput])
     return self
 
-  #   checkError : Test (a -> b) . a . String -> Void [IO]
+  #   checkAssert : Test (a -> b) . a . (b -> Bool) . String -> Test (a -> b)
+  def checkAssert(self, input, assertion, testName = "untitled test"):
+    actualOutput = self.toTest(*input)
+    if not assertion(actualOutput):
+      self.results.append([testName, input, "(assertion)" "---"])
+    return self
+
+  #   checkError : Test (a -> b) . a . String -> Test (a -> b)
   def checkError(self, input, testName = "untitled test"):
     try:
       actualOutput = self.toTest(*input)
       self.results.append([testName, input, "(error)", actualOutput])
+      # ^ only appends a failed test report
+      # if an error was NOT triggered
     finally:
       return self
 
   #   printResults : Test (a -> b) . -> Void [IO]
   def printResults(self):
-    print 'unit tests for function "' + self.name + '":',
+    print '== UNIT TESTS for function "' + self.name + '":',
     if len(self.results) == 0:
-       print "ok, all tests passed"
+       print "OK, all tests passed"
     else:
-      print len(self.results), "tests failed:"
+      print len(self.results), "tests FAILED:"
       report = [["test name",
             "input",
             "expected output",
@@ -54,7 +63,7 @@ class Test():
 
 #   assertion : String . Bool -> Void [IO]
 def assertion(name, value):
-  print 'assertion "' + name + '"',
+  print '== ASSERTION "' + name + '"',
   if value:
     print "succeeded."
   else:

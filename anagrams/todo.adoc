@@ -1,5 +1,10 @@
 = todo
 
+== pdf:
+- stats (limitations)
+- description of DICO
+- and of anagramsOf
+
 == optimizations
 - Tools.classify : sort the classes along the way, so that we can use indexOf_div
   right from the start, should speed the loading
@@ -12,6 +17,3 @@
 - get rid of BTState? use a dictionary for the numbers?
 
 == To Ask
-- format des cartouches ?
-- PDF: "taille des chaines?"
-- doit-on faire un benchmarking?

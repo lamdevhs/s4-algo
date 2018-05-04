@@ -9,14 +9,13 @@ from A import est_anagramme, anagrammes, best
 
 def testingPartA():
   Test(est_anagramme
-    ).check(  input = ("foo", "bar"),
+    ).check(  input = ("FOO", "BAR"),
               output = False,
               testName = "not anagrams"
     ).check(  input = ("ETFROMAGE", "MEGAFORTE"),
               output = True,
               testName = "are anagrams"
     ).printResults()
-
 
   anagrammes_ = lambda word, n: len(anagrammes(word)) == n
   # ^ testing the length of results of anagrammes()
