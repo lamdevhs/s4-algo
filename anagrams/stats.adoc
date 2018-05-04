@@ -1,0 +1,8 @@
+== Dico
+univ: 7-8s
+== B.py
+copies, univ, unoptimized: 241
+copies, univ, optimized: 81
+idem but no copying: 80.8
+== memory
+univ: ~125Mio
