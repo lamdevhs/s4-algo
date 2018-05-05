@@ -88,8 +88,6 @@ def indexOf(x, ys):
 # (x -> c) ->
 # (List c, List (List x))
 def classify(xs, f):
-  # if xs == None:
-  #   return None
   classes = []
   groups = []
   for x in xs:

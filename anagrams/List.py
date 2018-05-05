@@ -37,7 +37,10 @@ def mapLL(f, LL):
 # into one single "flat" list.
 def flatten(LL):
 # flatten : List (List a) -> List a
-    return reduce(lambda line, line2: line + line2, LL, [])
+    r = []
+    for L in LL:
+        r += L
+    return r
 
 # ==== pretty printing
 
@@ -125,7 +128,7 @@ def toStr(x):
 # depends on its input values (aka it pertains to type dependency)
 def funcToStr(x):
     if x.__class__ == functionClass:
-        return "<" + x.func_name + ">"
+        return "<" + x.__name__ + ">"
     elif x.__class__ == listClass or x.__class__ == tupleClass:
         return map(funcToStr, x)
     else:

@@ -4,11 +4,13 @@
 
 // colors for monotype spans: fg = #2590ba, bg = EEE
 
+
 == Général
+
+Version de Python du code : _Python 3_.
 
 Tout a été traité et testé, et tout est fonctionnel.
 Les réponses aux questions posées dans le PDF des instructions  peuvent être visualisées en exécutant les fichiers _A.py_ et _B.py_. Le code correspondant est à la fin de chaque fichier.
-
 
 Stratégies de codage::
 - *Programmation Dynamique* : construction et utilisation d'une structure de donnée pour faciliter et accélérer les calculs effectués.
@@ -16,7 +18,7 @@ Stratégies de codage::
 - Technique de recherche *Diviser Pour Régner* : utilisée pour optimiser encore plus l'accès à la structure du dictionnaire dans le cas le plus critique (_cf_ *Partie B*).
 
 
-Chiffres et Limitations::
+Chiffres et limitations::
 Le programme nécessite environ 125Mo de mémoire vive pour contenir la structure qui fait office de dictionnaire.
 Celle-ci se construit en environ 5 à 8 secondes (dépend de la machine). Une fois cela fait, presque tous les calculs se font de manière instantanée :
 +

@@ -46,11 +46,6 @@ def testingPartB():
   assertion("presque_anagrammes('PAR', 1)",
     sorted(near_anagrams_of_PAR) ==
     sorted(presque_anagrammes("PAR", 1)))
-  # Test(presque_anagrammes
-  #   ).check(  input = ("PAR", 1),
-  #             output = near_anagrams_of_PAR,
-  #             testName = 1
-  #   ).printResults()
 
   print()
   # String . Int -> Bool
@@ -59,12 +54,12 @@ def testingPartB():
       + str((word,n)))
     result = presque_anagrammes(word, n)
     ndup = nDuplicates(result)
-    print("... number of duplicated answers :", ndup)
+    print("... number of duplicated results :", ndup)
     nInvalid = 0
     for answer in result:
       if not est_presque_anagramme(word, answer, n):
         nInvalid += 1
-    print("... number of invalid answers :", nInvalid)
+    print("... number of invalid results :", nInvalid)
     isOk = (nInvalid, ndup) == (0,0)
     return isOk
 
