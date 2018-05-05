@@ -19,7 +19,7 @@ Chiffres et Limitations::
 Le programme nécessite environ 125Mo de mémoire vive pour la construction de la structure qui fait office de dictionnaire.
 Celle-ci se construit en environ 5 à 8 secondes (dépend de la machine). Une fois cela fait, presque tous les calculs se font de manière instantanée :
 - recherche des mots ayant le plus d'anagrammes (_A.py_)
-- recherche des multi-anagrammes de `CAROLINE ET FLORIAN` pour n = 2 mots maximum, de `CHAMPOLLION` pour %n quelconque (_Tests_C.py_).
+- recherche des multi-anagrammes de `CAROLINE ET FLORIAN` pour n = 2 mots maximum, de `CHAMPOLLION` pour n quelconque (_Tests_C.py_).
 
 +
 La recherche des mots ayant le plus de presque-anagrammes pour n = 1 lettre supplémentaire (_B.py_) demande elle beaucoup plus de temps : initialement, entre deux et trois minutes. Cependant, en optimisant la structure par le biais de tri systématique de certaines sous-listes du dictionnaire (_cf_ _Dico.py_ `Dico.optimize()`), ce qui permet une recherche en complexité logarithmique au lieu de séquentielle/linéaire, le temps pour ce calcul a pu être réduit à entre 50 et 80 secondes.
@@ -43,11 +43,13 @@ Le coeur de l'efficacité de ce programme est basée sur l'idée d'indexer et de
 
 ==== Structure interne de `DICO.dico`
 
-`Dico.dico` contient toutes les familles d'anagrammes existantes du dictionnaire, déjà séparées dans des listes individuelles, et référencées par leur signature. C'est un tableau à deux dimensions, pour un accès aussi direct que possible aux familles recherchées. +
+`Dico.dico` contient toutes les familles d'anagrammes existantes du dictionnaire, déjà séparées dans des listes de mots individuelles, et référencées par leurs signatures. C'est un tableau à deux dimensions, pour un accès aussi rapide et direct que possible aux familles recherchées. +
 
 La première dimension correspond à la longueur des mots de la famille recherchée. La seconde dimension correspond à une formule calculée à partir des lettres des mots de la famille. A peu de chose près, elle correspond à la somme des lettres de n'importe quel mot de la famille, avec bien sûr A = 1, B = 2, etc. La fonction qui calcule cela s'appelle `wordSum()`. Donc, si l'on a une chaîne de caractère `s`, et l'on cherche ses anagrammes, la première chose à faire est de récupérer `tup := DICO.dico[len(s)][wordSum(s)]`.
 
-`tup` est un tuple qui contient deux listes de même longueur. La seconde liste contient toutes les familles (c'est à dire les listes d'anagrammes) dont les mots ont la même longueur et la même somme que `s`. La première liste contient les *signatures* respectives des familles de la deuxième liste. Si l'on cherche la famille de `s`, il ne reste plus alors qu'à récupérer l'index de sa signature `sorted(s)` dans la première liste. Si cet index n'est pas `-1`, on récupère alors la famille correspondante à cet index dans le second élément de `tup`. Cette famille est alors directement l'ensemble des anagrammes de `s` dans le dictionnaire.
+`tup` est un tuple qui contient deux listes de même longueur. La seconde liste contient toutes les familles (c'est à dire les listes d'anagrammes) dont les mots ont la même longueur et la même somme que `s`. La première liste contient les *signatures* respectives des familles de la deuxième liste. Si l'on cherche la famille de `s`, il ne reste plus alors qu'à récupérer l'index de sa signature `sorted(s)` dans la première liste. Si cet index existe, on récupère alors la famille correspondante à cet index dans le second élément de `tup`. Cette famille est alors directement l'ensemble des anagrammes de `s` dans le dictionnaire.
+
+Dans le cas où la signature de `s` n'est pas dans la première liste de `tup`, ou dans le cas où l'on tombe sur la valeur `None` avant ou au moment d'atteindre `tup`, cela signifie évidemment que `s` ne possède aucun anagramme dans le dictionnaire.
 
 === [[Partie-B]] Partie B
 
@@ -59,12 +61,17 @@ La méthode `Dico.optimize()` ne prend même pas 1 seconde pour effectuer ce tri
 
 ==== Algorithme pour `multiAnagrams()`
 
-Cette fonction est le moteur principal de `A1` et `A2`. Elle récupère tous les "multi-anagrammes" de exactement `n` mots de la chaîne donnée en entrée (sous la forme d'une liste de listes de `n` familles). Elle est écrite en backtracking, et c'est de loin la plus longue est compliquée.
-
-Il est en effet difficile d'éviter de récupérer plusieurs fois les mêmes solutions. Le premier pas a été de faire en sorte que la longueur des mots soit toujours croissante en profondeur, puisque `[SEL, LE] == [LE, SEL]`. Mais ce fut loin d'être suffisant.
-
-Par exemple, si deux familles `F` et `G` ont des signatures de même longueur, on risque d'avoir des doublons du type `[F G] == [G F]`. On gère ce problème en faisant en sorte que la signature des mots soit croissante (alphabétiquement parlant) en profondeur, dans le cas où deux signatures se suivent et sont de même longueur.
+Cette fonction est le moteur principal de `A1` et `A2`. Elle récupère tous les "multi-anagrammes" de exactement `n` mots de la chaîne donnée en entrée. Elle est écrite en backtracking, et c'est de loin la plus longue et la plus compliquée. Elle donne en sortie toutes les combinaisons de `n` familles d'anagrammes telles que si l'on prend un mot dans chacune des `n` familles, on obtienne un multi-anagramme de `n` mots de la chaîne d'entrée. Le type de sortie est donc une liste de listes de familles, chaque liste de famille du résultat ayant une longueur de `n`.
 
 L'algorithme nécessite tant de paramètres (une dizaine), que j'ai préféré créer une classe `BTState` (pour _state of the backtracker_) pour contenir tous les paramètres nécessaires.
 
-~~ Lister paramètres?
+On commence par créer deux listes de même taille, `letters` et `amountsLeft`, l'une contenant les différentes lettres de la chaîne passée en entrée (sans répétition), l'autre contenant la quantité restante pour chaque lettre de la première liste au fur et à mesure du processus. On a aussi besoin d'une variable `result` qui contient toutes les solutions au fur et à mesure qu'on les trouve. `nWordsLeft` compte le nombre de mots restant à trouver avant d'avoir une autre solution complète ; elle vaut `n` au tout début. Les autres paramètres ont des valeurs par défaut.
+
+L'algorithme suit le schéma qui suit :
+- si `nWordsLeft == 0` on `return` sans rien faire.
+- si `nWordsLeft == 1`, il ne reste plus qu'on mot à trouver. Pour trouver la dernière famille de la solution que l'on est en train de construire, on doit donc obligatoirement utiliser toutes les lettres qu'il reste. La variable `selection` contient à tout instant les lettres sélectionnées pour faire partie de la signature de la prochaine famille à trouver.
+** Pour éviter les doublons, on doit tenir compte du fait que si dans une solution, deux familles qui se suivent sont de même longueur de mot, la seconde doit avoir une signature alphabétiquement supérieure ou égale à celle de la première. Si ça n'est pas le cas, on a atteint un cul-de-sac, donc on `return`.
+** Si tout va bien, on récupère les anagrammes de la sélection, c'est-à-dire sa famille, avec `DICO.anagramsOf`. Si la famille est vide, le chemin emprunté est un cul-de sac et on ne fait rien de plus. Sinon, on ajoute à `result` la réunion de `partial`, qui contient à tout instant la solution en cours de construction, et de la famille de la sélection que l'on vient de trouver.
+- si `nWordsLeft > 1` : afin d'éviter les doublons, les familles d'une solution sont rangées par ordre croissant de longueur de mot. Il faut choisir cette longueur de mot `nextWordLen` pour la prochaine famille à trouver.
+** Si `nextWordLen == None`, c'est signe qu'on a pas encore décidé cette longueur de mot. On fait une boucle sur `L` dans `range(minL, maxL + 1)` en rappelant le backtracker avec une copie de la variable d'état `S` et en définissant `nextWordLen := L`. `minL` est la taille minimale autorisée : comme les familles sont rangées par ordre croissant de longueur de signature, cela correspond à la longueur de la signature de la précédente famille, soit `minNextLen`. `maxL` est la division entière du nombre total de lettres qu'il reste `nLettersLeft` et du nombre de familles qu'il reste à trouver `nWordsLeft`. En effet, s'il reste `k` familles à trouver, elles auront toutes au moins une longueur de signature valant `L`, pour `L` choisi dans [minL, maxL]. Donc il faut qu'il nous reste au moins `k*L` lettres à distribuer, c'est-à-dire `nLettersLeft >= nWordsLeft*L` d'où `L <= nLettersLeft // nWordsLeft =: maxL`.
+** Si `nextWordLen != None`, on a déjà choisi la longueur de la prochaine famille à ajouter à la solution en cours. Il nous reste à choisir les lettres à ajouter à la `selection`, ainsi que leur quantité. On fait donc une

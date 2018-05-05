@@ -27,7 +27,6 @@ class BTState():
     nWordsLeft,
     letters,
     amountsLeft,
-    nLettersLeft,
 
     minNextLen = 1,
     nextWordLen = None,
@@ -40,7 +39,6 @@ class BTState():
     self.nWordsLeft = nWordsLeft
     self.letters = letters
     self.amountsLeft = amountsLeft
-    self.nLettersLeft = nLettersLeft
 
     self.minNextLen = minNextLen
     self.nextWordLen = nextWordLen
@@ -83,8 +81,7 @@ def multiAnagrams(inputString, numberOfWords):
     result = result,
     nWordsLeft = numberOfWords,
     letters = letters,
-    amountsLeft = map(len, grouped),
-    nLettersLeft = len(inputString))
+    amountsLeft = map(len, grouped))
 
   multiAnagrams_backtracker(S)
   return result
@@ -92,7 +89,7 @@ def multiAnagrams(inputString, numberOfWords):
 # The very delicate and complicated backtracker that
 # gets the results for multiAnagrams().
 # Its unique input is of type BTState, and contains
-# all the 11 parameters needed to make it work. These
+# all the 10 parameters needed to make it work. These
 # are as follows:
 #
 #   S.result : List (List Family)
@@ -107,9 +104,6 @@ def multiAnagrams(inputString, numberOfWords):
 #   S.amountsLeft : List Int
 #       list of amounts left to choose from for each letter
 #       in S.letters, at any given time.
-#   S.nLettersLeft : Int
-#       number of letters left (with multiplicity).
-#       is always equal to sum(S.amountsLeft).
 #   S.minNextLen : Int
 #       the words must be in ascending order of length
 #       so this is the lower limit for the next word's
@@ -161,7 +155,8 @@ def multiAnagrams_backtracker(S):
     if S.nextWordLen == None:
       # no length of word was decided yet
       minL = S.minNextLen
-      maxL = S.nLettersLeft // S.nWordsLeft
+      nLettersLeft = sum(S.amountsLeft)
+      maxL = nLettersLeft // S.nWordsLeft
       # since words are in ascending order
       # of lengths, the next word must have
       # at least the length of the previous word,
@@ -224,7 +219,6 @@ def multiAnagrams_backtracker(S):
           newS = copy(S)
           newS.selection = (S.selection
             + quantity*letter)
-          newS.nLettersLeft -= quantity
           newS.nextLetter += 1
           multiAnagrams_backtracker(newS)
           S.amountsLeft[S.nextLetter] += quantity
