@@ -20,7 +20,7 @@ def rebuildString(letters, amounts):
 # of a word is so horrendously complicated that
 # I decided to create a class just to handle
 # all the necessary parameters, to avoid having
-# a function which takes 11 arguments.
+# a function which takes 10 arguments.
 class BTState():
   def __init__(self,
     result,
