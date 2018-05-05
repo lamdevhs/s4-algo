@@ -317,20 +317,3 @@ def A2(letters, N):
   for numberOfWords in range(1, N + 1):
     r += flatten(multiAnagrams(letters, numberOfWords))
   return r
-
-
-if __name__ == "__main__":
-  DICO.optimize()
-  for word in ["ROSE", "PROSE", "CHAMPOLLION"]:
-    res = A1(word)
-    print word, len(res)
-
-  for n in range(1, 6):
-    res = A2("CHAMPOLLION", n)
-    print n, len(res)
-  beforeTime = time.clock()
-  for i in range(5):
-    #print len(A2("CAROLINEETFLORIAN", i))
-    multiAnagrams("CAROLINEETFLORIAN", i)
-    print i
-  print "Time:", time.clock() - beforeTime

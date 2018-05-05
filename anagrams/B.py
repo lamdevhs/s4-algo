@@ -109,7 +109,7 @@ def bestNearOfLength(L, N):
 
 
 if __name__ == "__main__":
-  DICO.optimize()
+  #DICO.optimize()
   # ^ optimizations are needed to make the code
   # below work in about 50-80s instead of
   # over 120-170s.

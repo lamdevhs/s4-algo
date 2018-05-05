@@ -1,19 +1,12 @@
 = todo
 
 == pdf:
-- stats (limitations)
-- description of DICO
-- and of anagramsOf
-
-== optimizations
-- Tools.classify : sort the classes along the way, so that we can use indexOf_div
-  right from the start, should speed the loading
-- C.multiAnagrams: inplace modification of partialSolution since we know it will be of size `n`.
+- style for code spans
+- justified text
+- size 84%
 
 == tidying
 - comments: TODO, print, ??
-- remove argument `D` in functions of C.py
-- get rid of useless parts of BTState
-- get rid of BTState? use a dictionary for the numbers?
-
-== To Ask
+- add headers for py files
+- check headers of old files
+- from python2 to python3
