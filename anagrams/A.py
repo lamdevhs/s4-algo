@@ -1,5 +1,5 @@
-# = ANAGRAMMES - Projet Algorithmique Avancee
-# [Nathanael Bayard] [2017 2018]
+# = Projet Anagrammes
+# [Algorithmique Avancée] [L2 INFO] [2017 2018] [Nathanael Bayard]
 
 # Note: I recommend reading README.pdf first.
 

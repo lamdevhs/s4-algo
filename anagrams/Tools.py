@@ -1,3 +1,10 @@
+# = Projet Anagrammes
+# [Algorithmique Avancée] [L2 INFO] [2017 2018] [Nathanael Bayard]
+
+# Note: I recommend reading README.pdf first.
+
+# == Tools
+
 from List import map
 
 # ----
@@ -11,9 +18,6 @@ def linesFromFile(filepath):
   except:
     return None
   return lines
-
-def pause(msg = ""):
-  raw_input("pause " + msg)
 
 # (x -> Num) .
 # List x ->
@@ -122,57 +126,11 @@ def indexOf_div(x, ys):
   else:
     return -1
 
-# Does what classify() does, except
-# the output is sorted, based on the list of images
-# by f (the first list of the output tuple).
-# e.g.:
-# . classify_div([bca,aba,cab,caa], sorted)
-#   == ([aab,aac,abc], [[aba],[caa],[bca,cab])
-# we do have here aab < aac < abc
-# by contrast:
-# . classify([bca,aba,cab,caa], sorted)
-#   == ([abc,aab,aac], [[bca,cab],[aba],[caa])
-# and here, the classes [abc, aab, aac] aren't sorted
-# since abc > aab.
-#
-# The purpose is to increase the speed of searching
-# through that double list, via a divide-and-conquer
-# algorithm over the leftwise list of the output.
-#
-# List x .
-# (x -> c) ->
-# (List c, List (List x))
-def classify_div(xs, f):
-  # if xs == None:
-  #   return None
-  classes = []
-  groups = []
-  for x in xs:
-    cLass = f(x)
-    classIndex = indexOf(cLass, classes)
-    if classIndex == -1:
-      classIndex = len(classes)
-      classes.append(cLass)
-      groups.append([x])
-    else:
-      groups[classIndex].append(x)
-  z = zip(classes, groups)
-  z.sort(leftSorting)
-  (classes, groups) = unzip(z)
-  return (classes, groups)
-
-# Compares both tuples based on
-# the left value of each tuple.
-# (doesn't work for .sort() of python3)
-#
-# (s, a) . (s, b) -> {-1,1,0}
-def leftSorting(t1, t2):
-  return cmp(t1[0],t2[0])
-
 # (x, y) -> x
 def leftBit(tup):
   return tup[0]
 
+# List a . List b -> List (a, b)
 def zip_(A, B):
   r = []
   for i in range(len(A)):

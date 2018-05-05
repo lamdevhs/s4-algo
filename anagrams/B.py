@@ -1,12 +1,13 @@
+# = Projet Anagrammes
+# [Algorithmique Avancée] [L2 INFO] [2017 2018] [Nathanael Bayard]
 
-
+# Note: I recommend reading README.pdf first.
 
 # == Partie B
 
 import time
 from Tools import classify, identity, indexOf, indexOf_div, nDuplicates
 from Dico import (DICO, wordSum)
-
 
 # === est_presque_anagramme()
 

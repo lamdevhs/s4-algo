@@ -1,8 +1,13 @@
+# = Projet Anagrammes
+# [Algorithmique Avancée] [L2 INFO] [2017 2018] [Nathanael Bayard]
+
+# Note: I recommend reading README.pdf first.
+
+# == Dico.py
 
 import sys
 from Tools import (mapsum, linesFromFile,
-  classify, indexOf,
-  classify_div, indexOf_div,
+  classify, indexOf, indexOf_div,
   zip_, unzip, leftBit)
 from List import map
 import time

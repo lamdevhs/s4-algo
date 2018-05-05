@@ -1,7 +1,7 @@
 """
-Author: Nathanael Bayard
 Module Name: List
 Description: list/string-related tools.
+Author: Nathanael Bayard
 """
 
 # ==== List constructors
@@ -16,7 +16,7 @@ def strReplicate(amount, pattern):
 # ==== lists of lists
 
 # The python3 map returns an iterator,
-# which i don't care for.
+# which i don't care for very much.
 #
 def map(f, L):
 # map : (a -> b) . List a -> List b

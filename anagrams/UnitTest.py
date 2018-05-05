@@ -1,3 +1,8 @@
+"""
+Module Name: UnitTest
+Description: tools to create simple unit tests easily.
+Author: Nathanael Bayard
+"""
 
 from List import toPrettyStringLL
 

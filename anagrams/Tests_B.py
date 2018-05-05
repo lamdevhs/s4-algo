@@ -1,6 +1,7 @@
+# = Projet Anagrammes
+# [Algorithmique Avancée] [L2 INFO] [2017 2018] [Nathanael Bayard]
 
-
-
+# Note: I recommend reading README.pdf first.
 
 # == Partie B -- Tests
 

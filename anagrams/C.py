@@ -1,3 +1,9 @@
+# = Projet Anagrammes
+# [Algorithmique Avancée] [L2 INFO] [2017 2018] [Nathanael Bayard]
+
+# Note: I recommend reading README.pdf first.
+
+# == Partie C
 
 from copy import copy
 from List import map
@@ -5,17 +11,17 @@ from Tools import identity, classify
 from Dico import (DICO)
 import time
 
+# === multiAnagrams() -- function used by A1() and A2()
 
-
+# rebuildString(['a','z','e'], [1,2,3])
+#   == "azzeee"
+#
+# List Char . List Int -> String
 def rebuildString(letters, amounts):
   r = ""
   for i in range(len(letters)):
     r += letters[i]*amounts[i]
   return r
-
-# == Partie C
-
-# === multiAnagrams() -- function used by A1() and A2()
 
 # The backtracking to get all the multiAnagrams()
 # of a word is so horrendously complicated that
@@ -235,6 +241,7 @@ def multiAnagrams_backtracker(S):
 #   [[AB, BA], [AB, BA], [FOO]] ->
 #   [[AB, AB, FOO], [AB, BA, FOO], [BA, BA, FOO]]
 # Backtracking strategy.
+# cf README
 #
 # List Family ->
 # List (List String)
@@ -244,6 +251,8 @@ def multiplyFamilies(families):
   multiplyFamilies_BT(families, L, 0, None, [None]*L, result)
   return result
 
+# List Family . Int . Int . Int
+# . List String . List (List String) -> Void
 def multiplyFamilies_BT(families, L, familyIx, lastChoice,
   partial, result):
   if familyIx == L:
@@ -283,7 +292,6 @@ def multiplyFamilies_BT(families, L, familyIx, lastChoice,
 #     ['RA', 'LET'],
 #     ['RA', 'TEL'],
 #     ['LA', 'TER']]
-#
 #
 # List (List Family) ->
 # List (List String)

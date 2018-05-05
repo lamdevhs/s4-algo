@@ -11,9 +11,9 @@ Les réponses aux questions posées dans le PDF des instructions  peuvent être 
 
 
 Stratégies de codage::
-- *Programmation Dynamique* : construction et utilisation d'une structure de donnée pour faciliter et accélérer les calculs effectués. (<<class-Dico, La classe `Dico`>>)
+- *Programmation Dynamique* : construction et utilisation d'une structure de donnée pour faciliter et accélérer les calculs effectués.
 - *Backtracking* pour la grande majorité des fonctions les plus importantes, simplement parce que cela semble la seule manière possible de procéder, ou en tout cas de loin la plus simple.
-- Technique de recherche *Diviser Pour Régner* : utilisée pour optimiser encore plus l'accès à la structure du dictionnaire dans le cas le plus critique (<<Partie-B, Partie B>>).
+- Technique de recherche *Diviser Pour Régner* : utilisée pour optimiser encore plus l'accès à la structure du dictionnaire dans le cas le plus critique (_cf_ *Partie B*).
 
 
 Chiffres et Limitations::
@@ -25,7 +25,7 @@ Celle-ci se construit en environ 5 à 8 secondes (dépend de la machine). Une fo
 - recherche des multi-anagrammes de `CAROLINE ET FLORIAN` pour n = 2 mots maximum, de `CHAMPOLLION` pour n quelconque (_Tests_C.py_).
 --
 +
-La recherche des mots ayant le plus de presque-anagrammes pour n = 1 lettre supplémentaire (_B.py_) demande elle beaucoup plus de temps : initialement, entre 170s et 240s. Cependant, en optimisant la structure par le biais d'un tri systématique de certaines sous-listes du dictionnaire (_Dico.py_ `Dico.optimize()`), permettant par la suite une recherche en complexité logarithmique au lieu de séquentielle/linéaire, le temps pour ce calcul a pu être réduit à entre 50 et 80 secondes, selon les machines (<<Partie-B, Partie B>>).
+La recherche des mots ayant le plus de presque-anagrammes pour n = 1 lettre supplémentaire (_B.py_) demande elle beaucoup plus de temps : initialement, entre 170s et 240s. Cependant, en optimisant la structure par le biais d'un tri systématique de certaines sous-listes du dictionnaire (_Dico.py_ `Dico.optimize()`), permettant par la suite une recherche en complexité logarithmique au lieu de séquentielle/linéaire, le temps pour ce calcul a pu être réduit à entre 50 et 80 secondes, selon les machines.
 
 == Détails
 
