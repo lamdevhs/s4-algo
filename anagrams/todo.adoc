@@ -10,3 +10,4 @@
 - add headers for py files
 - check headers of old files
 - from python2 to python3
+- get rid of Either

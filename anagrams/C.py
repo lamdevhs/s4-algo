@@ -1,6 +1,7 @@
 
 from copy import copy
-from Tools import (linesToFile, identity, classify)
+from List import map
+from Tools import identity, classify
 from Dico import (DICO)
 import time
 
@@ -75,7 +76,7 @@ def multiAnagrams(inputString, numberOfWords):
   #   (['a', 'b', 'e', 'z'],
   #    [['a', 'a'], ['b'], ['e'], ['z', 'z', 'z']])
   # therefore:
-  # map(len, grouped) == [2,1,1,3]
+  #   map(len, grouped) == [2,1,1,3]
 
   S = BTState(
     result = result,

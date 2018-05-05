@@ -7,10 +7,11 @@
 
 from UnitTest import Test, assertion
 from C import multiAnagrams, A1, A2
+from List import map
 
 def testingPartC():
   count_A1 = lambda word: len(A1(word))
-  count_A1.func_name = "count_results_of_A1"
+  count_A1.__name__ = "count_results_of_A1"
   Test(count_A1
     ).check(  input = ("ETFROMAGE",),
               output = 192,
@@ -30,7 +31,7 @@ def testingPartC():
     ).printResults()
 
   count_A2 = lambda word, n: len(A2(word, n))
-  count_A2.func_name = "count_results_of_A2"
+  count_A2.__name__ = "count_results_of_A2"
   Test(count_A2
     ).check(  input = ("CHAMPOLLION", 1),
               output = 0,

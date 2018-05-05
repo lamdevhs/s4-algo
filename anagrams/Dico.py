@@ -3,7 +3,8 @@ import sys
 from Tools import (mapsum, linesFromFile,
   classify, indexOf,
   classify_div, indexOf_div,
-  leftSorting, unzip)
+  zip_, unzip, leftBit)
+from List import map
 import time
 
 # Takes a character c, returns:
@@ -96,11 +97,11 @@ class Dico():
   def __init__(self, words, verbose = False):
     if verbose:
       beforeTime = time.clock()
-      print "building Dico..."
+      print("building Dico...")
     self.dico = multigroup(words, [len, wordSum])
     self.optimized = False
     if verbose:
-      print "... indexing done"
+      print("... indexing done")
 
     # setting up families:
     maxL = len(self.dico)
@@ -117,17 +118,18 @@ class Dico():
               ofSameLen[i] = classify(ofSameSum, sorted)
     
     if verbose:
-      print # newline
-      print "Dico done. Time spent:", time.clock() - beforeTime
-      print # blank line for separation
+      print() # newline
+      print("Dico done. Time spent:", time.clock() - beforeTime)
+      print() # blank line for separation
 
   # Path -> Dico
   @staticmethod
   def fromFile(dicopath, verbose = False):
-    eith = linesFromFile(dicopath)
-    if eith.isLeft:
-      raise Exception (eith.leftValue)
-    words = eith.rightValue
+    lines = linesFromFile(dicopath)
+    if lines == None:
+      raise Exception ("Error while trying to read\
+ dictionnary. probably wrong path")
+    words = lines
     D = Dico(words, verbose)
     return D
 
@@ -170,17 +172,17 @@ class Dico():
   #
   # Dico -> Void
   def optimize(self):
-    print "Starting Dico.optimize()..."
+    print("Starting Dico.optimize()...")
     for ofSameLen in self.dico:
       if ofSameLen != None:
         for i in range(len(ofSameLen)):
           ofSameSum = ofSameLen[i]
           if ofSameSum != None:
             (signatures, families) = ofSameSum
-            z = zip(signatures, families)
-            z.sort(leftSorting)
+            z = zip_(signatures, families)
+            z.sort(key = leftBit)
             ofSameLen[i] = unzip(z)
-    print "Dico.optimize() done"
+    print("Dico.optimize() done\n")
     self.optimized = True
 
 # ----

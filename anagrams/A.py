@@ -79,20 +79,22 @@ def bestOfAll():
   return (maxSize, bestFamilies)
 
 if __name__ == "__main__":
-  print "-"*20
-  print "Partie A - Questions"
-  print "Combien de familles d'anagrammes sont de taille maximale ?"
+  print("-"*20)
+  print("Partie A - Questions")
+  print("Combien de familles d'anagrammes sont\
+ de taille maximale ?")
   (bestSize, bestFamilies) = bestOfAll()
-  print "reponse =", len(bestFamilies)
-  print "Quelle est cette taille ?"
-  print "reponse =", bestSize
-  print "Ces familles contiennent-elles toutes des mots d'une meme longueur ?"
+  print("reponse =", len(bestFamilies))
+  print("Quelle est cette taille ?")
+  print("reponse =", bestSize)
+  print("Ces familles contiennent-elles toutes\
+ des mots d'une meme longueur ?")
   sameLength = True
   firstLength = len(bestFamilies[0][0])
   for family in bestFamilies:
     if len(family[0]) != firstLength:
       sameLength = False
       break
-  print "reponse =", sameLength
-  print
-  print "Familles de plus grande taille :", bestFamilies
+  print("reponse =", sameLength)
+  print()
+  print("Familles de plus grande taille :", bestFamilies)

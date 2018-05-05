@@ -21,7 +21,7 @@ from List import toPrettyStringLL
 class Test():
   def __init__(self, functionToTest):
     self.toTest = functionToTest
-    self.name = functionToTest.func_name
+    self.name = functionToTest.__name__
     self.results = []
   
   #   check : Test (a -> b) . a . b . String -> Test (a -> b)
@@ -50,21 +50,22 @@ class Test():
 
   #   printResults : Test (a -> b) . -> Void [IO]
   def printResults(self):
-    print '== UNIT TESTS for function "' + self.name + '":',
+    print('== UNIT TESTS for function "'
+      + self.name + '":', end=' ')
     if len(self.results) == 0:
-       print "OK, all tests passed"
+       print("OK, all tests passed")
     else:
-      print len(self.results), "tests FAILED:"
+      print(len(self.results), "tests FAILED:")
       report = [["test name",
             "input",
             "expected output",
             "real output"]] + self.results
-      print toPrettyStringLL(report)
+      print(toPrettyStringLL(report))
 
 #   assertion : String . Bool -> Void [IO]
 def assertion(name, value):
-  print '== ASSERTION "' + name + '"',
+  print('== ASSERTION "' + name + '"', end=' ')
   if value:
-    print "succeeded."
+    print("succeeded.")
   else:
-    print "failed."
+    print("failed.")

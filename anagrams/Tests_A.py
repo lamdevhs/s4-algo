@@ -19,7 +19,7 @@ def testingPartA():
 
   anagrammes_ = lambda word, n: len(anagrammes(word)) == n
   # ^ testing the length of results of anagrammes()
-  anagrammes_.func_name = "anagrammes" # for printing's sake
+  anagrammes_.__name__ = "anagrammes" # for printing's sake
   Test(anagrammes_
     ).check(  input = ["RUSE", 6],
               output = True,
@@ -36,7 +36,7 @@ def testingPartA():
     ).printResults()
 
   best_ = lambda L: (len(best(L)[1]), best(L)[0])
-  best_.func_name = "best" # for printing's sake
+  best_.__name__ = "best" # for printing's sake
   Test(best_
     ).check(  input = [2], # L = 2
               output = (15, 2), # 15 families of 2 anagrams

@@ -1,26 +1,16 @@
-from Either import Left, Right
-
+from List import map
 
 # ----
 # ----
-# Path -> List String
+# Path -> List String [or None]
 def linesFromFile(filepath):
   try:
     with open(filepath,'rt') as desc:
       lines = desc.readlines()
       lines = map(str.strip, lines)
   except:
-    return Left("Error while trying to read file. probably wrong path")
-  return Right(lines)
-
-def linesToFile(lines, filepath):
-  try:
-    with open(filepath,'wt') as desc:
-      lines = map(lambda l: l + "\n", lines)
-      desc.writelines(lines)
-  except:
-    return Left("Error while trying to write file. probably wrong path")
-  return Right(None)
+    return None
+  return lines
 
 def pause(msg = ""):
   raw_input("pause " + msg)
@@ -173,10 +163,21 @@ def classify_div(xs, f):
 
 # Compares both tuples based on
 # the left value of each tuple.
+# (doesn't work for .sort() of python3)
 #
 # (s, a) . (s, b) -> {-1,1,0}
 def leftSorting(t1, t2):
   return cmp(t1[0],t2[0])
+
+# (x, y) -> x
+def leftBit(tup):
+  return tup[0]
+
+def zip_(A, B):
+  r = []
+  for i in range(len(A)):
+    r.append((A[i], B[i]))
+  return r
 
 # List (a, b) -> (List a, List b)
 def unzip(L):

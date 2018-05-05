@@ -51,27 +51,27 @@ def testingPartB():
   #             testName = 1
   #   ).printResults()
 
-  print
+  print()
   # String . Int -> Bool
   def checkResults_presque_anagrammes(word, n):
-    print ("checking results for presque_anagrammes"
+    print("checking results for presque_anagrammes"
       + str((word,n)))
     result = presque_anagrammes(word, n)
     ndup = nDuplicates(result)
-    print "... number of duplicated answers :", ndup
+    print("... number of duplicated answers :", ndup)
     nInvalid = 0
     for answer in result:
       if not est_presque_anagramme(word, answer, n):
         nInvalid += 1
-    print "... number of invalid answers :", nInvalid
+    print("... number of invalid answers :", nInvalid)
     isOk = (nInvalid, ndup) == (0,0)
     return isOk
 
   word = "PAR"
   for i in range(1,6):
     isOk = checkResults_presque_anagrammes(word, i)
-    print "... all ok:", isOk
-    print
+    print("... all ok:", isOk)
+    print()
 
 if __name__ == "__main__":
   testingPartB()

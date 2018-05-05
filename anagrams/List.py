@@ -15,6 +15,17 @@ def strReplicate(amount, pattern):
 
 # ==== lists of lists
 
+# The python3 map returns an iterator,
+# which i don't care for.
+#
+def map(f, L):
+# map : (a -> b) . List a -> List b
+    r = []
+    for x in L:
+        r.append(f(x))
+    return r
+
+
 # akin to `map` but for lists of lists:
 # applies the input function to every subelement
 # and returns the resulting new list of lists.
